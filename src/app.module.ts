@@ -9,10 +9,13 @@ import { TwitchModule } from './twitch/twitch.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { BankModule } from './bank/bank.module';
 import { CollectionsModule } from './collections/collections.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    AuthModule,
     PrismaModule,
     IgdbModule,
     BankModule,
@@ -20,6 +23,7 @@ import { CollectionsModule } from './collections/collections.module';
     CommonModule,
     TwitchModule,
     CollectionsModule,
+    UsersModule,
   ],
   controllers: [
     AppController

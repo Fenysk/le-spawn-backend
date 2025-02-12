@@ -7,6 +7,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id String @id @unique @default(cuid())
+
+  email String? @unique
+
+  hashedPassword     String?
+  hashedRefreshToken String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  roles Role[] @default([common])
+
+  profile Profile? @relation("ProfileToUser")
+}
+
+model Profile {
+  pseudo      String? @unique
+  displayName String?
+  biography   String?
+  link        String?
+  avatarUrl   String?
+
+  userId String @id @unique
+  user   User   @relation("ProfileToUser", fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model Game {
   id         String @id @unique @default(uuid())
   igdbGameId Int?   @unique
@@ -60,14 +87,20 @@ model GameCollectionItem {
 }
 
 model ManyGamePlatform {
-  game   Game   @relation("ManyGamePlatformToGame", fields: [gameId], references: [id])
+  game   Game   @relation("ManyGamePlatformToGame", fields: [gameId], references: [id], onDelete: Cascade)
   gameId String
 
-  platform   Platform @relation("ManyGamePlatformToPlatform", fields: [platformId], references: [id])
+  platform   Platform @relation("ManyGamePlatformToPlatform", fields: [platformId], references: [id], onDelete: Cascade)
   platformId String
 
   @@id([gameId, platformId])
   @@unique([gameId, platformId])
+}
+
+enum Role {
+  common
+  verified
+  admin
 }
 
 enum GameCategoryEnum {
