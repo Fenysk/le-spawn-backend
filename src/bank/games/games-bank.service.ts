@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { NewGameRequest } from '../dto/new-game.request';
-import { Game } from '@prisma/client';
+import { Game, Prisma } from '@prisma/client';
 import { getGameCategoryEnum } from 'src/igdb/enum/game-category.enum';
 import { IgdbService } from 'src/igdb/igdb.service';
+import { SearchGamesRequest } from '../dto/search-games.request';
 
 @Injectable()
 export class GamesBankService {
@@ -12,20 +13,27 @@ export class GamesBankService {
         private readonly igdbService: IgdbService,
     ) { }
 
-    async getGameWithBarcode(barcode: string): Promise<Game> {
+    async searchGames(searchGameDto: SearchGamesRequest): Promise<Game[]> {
         try {
-            const game = await this.prismaService.game.findFirst({
-                where: {
-                    barcodes: {
-                        has: barcode
-                    }
-                }
-            })
+            const whereConditions: Prisma.GameWhereInput[] = [];
 
-            if (!game)
-                throw new NotFoundException('Game not found in bank');
+            if (searchGameDto.query) {
+                whereConditions.push({ name: { contains: searchGameDto.query, mode: 'insensitive' } });
+            }
 
-            return game;
+            if (searchGameDto.barcode) {
+                whereConditions.push({ barcodes: { has: searchGameDto.barcode } });
+            }
+
+            const games = await this.prismaService.game.findMany({
+                where: whereConditions.length ? { OR: whereConditions } : {}
+            });
+
+            if (!games.length) {
+                throw new NotFoundException('No games found matching the search criteria');
+            }
+
+            return games;
         } catch (error) {
             throw error;
         }

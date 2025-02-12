@@ -1,55 +1,26 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ScandexService } from '../scandex/scandex.service';
 import { IgdbService } from '../igdb/igdb.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { GamesBankService } from './services/games-bank.service';
+import { GamesBankService } from './games/games-bank.service';
 import { NewGameRequest } from './dto/new-game.request';
-import { SearchGamesRequest } from './dto/search-games.request';
-import { Game, Prisma } from '@prisma/client';
-import { PlatformsBankService } from './services/platforms-bank.service';
+import { Game } from '@prisma/client';
+import { PlatformsBankService } from './platforms/platforms-bank.service';
 import { NewPlatformRequest } from './dto/new-platform.request';
 
 @Injectable()
-export class GamesService {
+export class BankService {
     constructor(
-        private readonly prismaService: PrismaService,
         private readonly scandexService: ScandexService,
         private readonly igdbService: IgdbService,
         private readonly gamesBankService: GamesBankService,
         private readonly platformsBankService: PlatformsBankService
     ) { }
 
-    async searchGames(searchGameDto: SearchGamesRequest): Promise<Game[]> {
+    async getGameFromBarcode(barcode: string): Promise<Game> {
         try {
-            const whereConditions: Prisma.GameWhereInput[] = [];
+            const games = await this.gamesBankService.searchGames({ barcode });
 
-            if (searchGameDto.query) {
-                whereConditions.push({ name: { contains: searchGameDto.query, mode: 'insensitive' } });
-            }
-
-            if (searchGameDto.barcode) {
-                whereConditions.push({ barcodes: { has: searchGameDto.barcode } });
-            }
-
-            const games = await this.prismaService.game.findMany({
-                where: whereConditions.length ? { OR: whereConditions } : {}
-            });
-
-            if (!games.length) {
-                throw new NotFoundException('No games found matching the search criteria');
-            }
-
-            return games;
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    async getGameWithBarcode(barcode: string): Promise<Game> {
-        try {
-            const game = await this.gamesBankService.getGameWithBarcode(barcode);
-
-            return game;
+            return games[0];
         } catch (error) {
             const scanDexGameInfo = await this.scandexService.lookup({ barcode: Number(barcode) });
 
