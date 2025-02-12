@@ -47,6 +47,7 @@ export class NewGameRequest {
     summary: string;
 
     @IsOptional()
-    @IsString()
-    platformId?: string;
+    @IsArray()
+    @IsString({ each: true })
+    platformIds?: string[];
 }

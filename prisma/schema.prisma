@@ -33,6 +33,7 @@ model Game {
 
 model Platform {
   id String @id @unique @default(uuid())
+  igdbPlatformId Int? @unique
 
   name         String
   abbreviation String

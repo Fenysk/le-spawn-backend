@@ -51,7 +51,15 @@ export class GamesBankService {
                     screenshotsUrl: gameData.screenshotsUrl,
                     storyline: gameData.storyline,
                     summary: gameData.summary,
-                    // TODO: implement platforms
+                    platformsRelation: {
+                        create: gameData.platformIds.map(platformId => ({
+                            platform: {
+                                connect: {
+                                    id: platformId
+                                }
+                            }
+                        }))
+                    }
                 }
             })
 

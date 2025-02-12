@@ -5,10 +5,17 @@ import { IgdbService } from './igdb.service';
 export class IgdbController {
   constructor(private readonly igdbService: IgdbService) {}
 
-  @Get(':id')
-  getGameById(
+  @Get('game/:id')
+  async getGameById(
     @Param('id') id: number
 ) {
-    return this.igdbService.getGameById(id);
+    return await this.igdbService.getGameById(id);
+  }
+
+  @Get('platform/:id')
+  async getPlatformById(
+    @Param('id') id: number
+) {
+    return await this.igdbService.getPlatformById(id);
   }
 }

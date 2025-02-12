@@ -1,6 +1,6 @@
 import { IsOptional, IsString} from 'class-validator';
 
-export class SearchGameDto {
+export class SearchGamesRequest {
     @IsOptional()
     @IsString()
     query?: string;

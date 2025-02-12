@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import igdb from 'igdb-api-node';
 import { TwitchService } from 'src/twitch/twitch.service';
 import { IGDBGameResponse } from './interface/igdb-game.response';
+import { IGDBPlatformResponse } from './interface/igdb-platform.response';
 
 @Injectable()
 export class IgdbService implements OnModuleInit {
@@ -66,6 +67,26 @@ export class IgdbService implements OnModuleInit {
                 throw new NotFoundException('Game not found in IGDB');
 
             return game;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async getPlatformById(id: number): Promise<IGDBPlatformResponse> {
+        try {
+            await this.ensureValidToken();
+            const { data } = await this.client
+                .fields(['*'])
+                .where(`id = ${id}`)
+                .request('/platforms');
+    
+            const platform = data[0];
+    
+            if (!platform)
+                throw new NotFoundException('Platform not found in IGDB');
+    
+            return platform;
         } catch (error) {
             console.error(error);
             throw error;

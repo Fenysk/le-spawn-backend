@@ -4,6 +4,8 @@ import { GamesController } from './games.controller';
 import { ScandexModule } from 'src/scandex/scandex.module';
 import { IgdbModule } from 'src/igdb/igdb.module';
 import { GamesBankService } from './services/games-bank.service';
+import { PlatformsBankService } from './services/platforms-bank.service';
+import { PlatformsController } from './controllers/platforms.controller';
 
 @Module({
   imports: [
@@ -12,8 +14,9 @@ import { GamesBankService } from './services/games-bank.service';
   ],
   providers: [
     GamesService,
-    GamesBankService
+    GamesBankService,
+    PlatformsBankService
   ],
-  controllers: [GamesController]
+  controllers: [GamesController, PlatformsController]
 })
 export class GamesModule { }

@@ -4,8 +4,10 @@ import { IgdbService } from '../igdb/igdb.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GamesBankService } from './services/games-bank.service';
 import { NewGameRequest } from './dto/new-game.request';
-import { SearchGameDto } from './dto/search-game.request';
+import { SearchGamesRequest } from './dto/search-games.request';
 import { Game, Prisma } from '@prisma/client';
+import { PlatformsBankService } from './services/platforms-bank.service';
+import { NewPlatformRequest } from './dto/new-platform.request';
 
 @Injectable()
 export class GamesService {
@@ -14,33 +16,34 @@ export class GamesService {
         private readonly scandexService: ScandexService,
         private readonly igdbService: IgdbService,
         private readonly gamesBankService: GamesBankService,
+        private readonly platformsBankService: PlatformsBankService
     ) { }
 
-    async searchGames(searchGameDto: SearchGameDto): Promise<Game[]> {
-    try {
-        const whereConditions: Prisma.GameWhereInput[] = [];
+    async searchGames(searchGameDto: SearchGamesRequest): Promise<Game[]> {
+        try {
+            const whereConditions: Prisma.GameWhereInput[] = [];
 
-        if (searchGameDto.query) {
-            whereConditions.push({ name: { contains: searchGameDto.query, mode: 'insensitive' } });
+            if (searchGameDto.query) {
+                whereConditions.push({ name: { contains: searchGameDto.query, mode: 'insensitive' } });
+            }
+
+            if (searchGameDto.barcode) {
+                whereConditions.push({ barcodes: { has: searchGameDto.barcode } });
+            }
+
+            const games = await this.prismaService.game.findMany({
+                where: whereConditions.length ? { OR: whereConditions } : {}
+            });
+
+            if (!games.length) {
+                throw new NotFoundException('No games found matching the search criteria');
+            }
+
+            return games;
+        } catch (error) {
+            throw error;
         }
-
-        if (searchGameDto.barcode) {
-            whereConditions.push({ barcodes: { has: searchGameDto.barcode } });
-        }
-
-        const games = await this.prismaService.game.findMany({
-            where: whereConditions.length ? { OR: whereConditions } : {}
-        });
-
-        if (!games.length) {
-            throw new NotFoundException('No games found matching the search criteria');
-        }
-
-        return games;
-    } catch (error) {
-        throw error;
     }
-}
 
     async getGameWithBarcode(barcode: string): Promise<Game> {
         try {
@@ -51,6 +54,30 @@ export class GamesService {
             const scanDexGameInfo = await this.scandexService.lookup({ barcode: Number(barcode) });
 
             const igdbGame = await this.igdbService.getGameById(scanDexGameInfo.igdb_metadata.id);
+
+            console.log(igdbGame.platforms);
+
+            const platforms = await Promise.all(igdbGame.platforms.map(async platformFromIgdb => {
+                console.log('Trying platform Igdb Id: ', platformFromIgdb.id);
+                try {
+                    return await this.platformsBankService.getPlatformWithIgdbId(+platformFromIgdb.id);
+                } catch (error) {
+                    try {
+                        const igdbPlatform = await this.igdbService.getPlatformById(+platformFromIgdb.id);
+
+                        const platformData: NewPlatformRequest = {
+                            igdbPlatformId: +platformFromIgdb.id,
+                            name: igdbPlatform.name,
+                            abbreviation: igdbPlatform.abbreviation,
+                            generation: igdbPlatform.generation
+                        }
+
+                        return await this.platformsBankService.addPlatformToBank(platformData);
+                    } catch (error) {
+                        throw error;
+                    }
+                }
+            }));
 
             const newGameRequest: NewGameRequest = {
                 barcodes: [barcode],
@@ -64,7 +91,7 @@ export class GamesService {
                 storyline: igdbGame.storyline,
                 summary: igdbGame.summary,
                 coverUrl: this.igdbService.getGameCoverFullUrl(igdbGame.cover.url),
-                // TODO: implement platforms
+                platformIds: platforms.map(platform => platform.id)
             }
 
             const newGame = await this.gamesBankService.addGameToBank(newGameRequest);
