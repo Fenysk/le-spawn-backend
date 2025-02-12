@@ -1,5 +1,6 @@
 export interface IGDBGameResponse {
   id: number;
+  alternative_names: AlternativeName[];
   category: number;
   cover: Cover;
   first_release_date: number;
@@ -111,5 +112,13 @@ interface Video {
   game: number;
   name: string;
   video_id: string;
+  checksum: string;
+}
+
+interface AlternativeName {
+  id: number;
+  comment: string;
+  game: number;
+  name: string;
   checksum: string;
 }

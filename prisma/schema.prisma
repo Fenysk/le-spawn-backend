@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Game {
+  id         String @id @unique @default(uuid())
+  igdbGameId Int?   @unique
+
+  barcodes   String[]
+
+  category GameCategoryEnum
+  coverUrl String?
+
+  firstReleaseDate DateTime
+
+  franchises String[]
+  genres     String[]
+
+  name String
+
+  screenshotsUrl String[]
+
+  storyline String?
+  summary   String?
+
+  platformsRelation ManyGamePlatform[]
+}
+
+model Platform {
+  id String @id @unique @default(uuid())
+
+  name         String
+  abbreviation String
+
+  generation Int?
+
+  gamesRelation ManyGamePlatform[]
+}
+
+model ManyGamePlatform {
+  game   Game   @relation(fields: [gameId], references: [id])
+  gameId String
+
+  platform   Platform @relation(fields: [platformId], references: [id])
+  platformId String
+
+  @@id([gameId, platformId])
+  @@unique([gameId, platformId])
+}
+
+enum GameCategoryEnum {
+  mainGame
+  dlcAddon
+  expansion
+  bundle
+  standaloneExpansion
+  mod
+  episode
+  season
+  remake
+  remaster
+  expandedGame
+  port
+  fork
+  pack
+  update
+}
