@@ -11,7 +11,7 @@ model Game {
   id         String @id @unique @default(uuid())
   igdbGameId Int?   @unique
 
-  barcodes   String[]
+  barcodes String[]
 
   category GameCategoryEnum
   coverUrl String?
@@ -28,26 +28,42 @@ model Game {
   storyline String?
   summary   String?
 
-  platformsRelation ManyGamePlatform[]
+  platformsRelation  ManyGamePlatform[]   @relation("ManyGamePlatformToGame")
+  gameCollectionItem GameCollectionItem[] @relation("GameCollectionItemToGame")
 }
 
 model Platform {
-  id String @id @unique @default(uuid())
-  igdbPlatformId Int? @unique
+  id             String @id @unique @default(uuid())
+  igdbPlatformId Int?   @unique
 
   name         String
   abbreviation String
 
   generation Int?
 
-  gamesRelation ManyGamePlatform[]
+  gamesRelation ManyGamePlatform[] @relation("ManyGamePlatformToPlatform")
+}
+
+model GameCollectionItem {
+  id String @id @unique @default(uuid())
+
+  hasBox   Boolean
+  hasGame  Boolean
+  hasPaper Boolean
+
+  stateBox   String?
+  stateGame  String?
+  statePaper String?
+
+  gameId String?
+  game   Game?   @relation("GameCollectionItemToGame", fields: [gameId], references: [id])
 }
 
 model ManyGamePlatform {
-  game   Game   @relation(fields: [gameId], references: [id])
+  game   Game   @relation("ManyGamePlatformToGame", fields: [gameId], references: [id])
   gameId String
 
-  platform   Platform @relation(fields: [platformId], references: [id])
+  platform   Platform @relation("ManyGamePlatformToPlatform", fields: [platformId], references: [id])
   platformId String
 
   @@id([gameId, platformId])

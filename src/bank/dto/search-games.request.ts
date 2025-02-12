@@ -1,4 +1,4 @@
-import { IsOptional, IsString} from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class SearchGamesRequest {
     @IsOptional()
@@ -8,4 +8,8 @@ export class SearchGamesRequest {
     @IsOptional()
     @IsString()
     barcode?: string;
+
+    @IsOptional()
+    @IsUUID()
+    id?: string;
 }

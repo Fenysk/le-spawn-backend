@@ -17,21 +17,21 @@ export class GamesBankService {
         try {
             const whereConditions: Prisma.GameWhereInput[] = [];
 
-            if (searchGameDto.query) {
-                whereConditions.push({ name: { contains: searchGameDto.query, mode: 'insensitive' } });
-            }
+            if (searchGameDto.id)
+                whereConditions.push({ id: searchGameDto.id });
 
-            if (searchGameDto.barcode) {
+            if (searchGameDto.query)
+                whereConditions.push({ name: { contains: searchGameDto.query, mode: 'insensitive' } });
+
+            if (searchGameDto.barcode)
                 whereConditions.push({ barcodes: { has: searchGameDto.barcode } });
-            }
 
             const games = await this.prismaService.game.findMany({
                 where: whereConditions.length ? { OR: whereConditions } : {}
             });
 
-            if (!games.length) {
+            if (!games.length)
                 throw new NotFoundException('No games found matching the search criteria');
-            }
 
             return games;
         } catch (error) {

@@ -8,6 +8,7 @@ import { CommonModule } from './common/common.module';
 import { TwitchModule } from './twitch/twitch.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { BankModule } from './bank/bank.module';
+import { CollectionsModule } from './collections/collections.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { BankModule } from './bank/bank.module';
     ScandexModule,
     CommonModule,
     TwitchModule,
+    CollectionsModule,
   ],
   controllers: [
     AppController

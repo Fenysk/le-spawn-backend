@@ -21,5 +21,9 @@ import { GamesController } from './games/games.controller';
     GamesBankService,
     PlatformsBankService,
   ],
+  exports: [
+    GamesBankService,
+    BankService,
+  ]
 })
 export class BankModule { }
