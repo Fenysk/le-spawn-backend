@@ -1,13 +1,9 @@
 import { IsBoolean, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 
-export class AddGameItemToCollectionRequest {
+export class UpdateGameItemInCollectionRequest {
     @IsNotEmpty()
     @IsUUID()
-    collectionId: string;
-
-    @IsNotEmpty()
-    @IsUUID()
-    gameId: string;
+    gameItemId: string;
 
     @IsNotEmpty()
     @IsBoolean()

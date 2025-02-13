@@ -20,7 +20,8 @@ model User {
 
   roles Role[] @default([common])
 
-  profile Profile? @relation("ProfileToUser")
+  profile     Profile?     @relation("ProfileToUser")
+  collections Collection[] @relation("CollectionToUser")
 }
 
 model Profile {
@@ -71,6 +72,17 @@ model Platform {
   gamesRelation ManyGamePlatform[] @relation("ManyGamePlatformToPlatform")
 }
 
+model Collection {
+  id String @id @unique @default(uuid())
+
+  title String
+
+  gameItems GameCollectionItem[] @relation("GameCollectionItemToCollection")
+
+  userId String
+  user   User   @relation("CollectionToUser", fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model GameCollectionItem {
   id String @id @unique @default(uuid())
 
@@ -82,8 +94,11 @@ model GameCollectionItem {
   stateGame  String?
   statePaper String?
 
-  gameId String?
-  game   Game?   @relation("GameCollectionItemToGame", fields: [gameId], references: [id])
+  gameId String
+  game   Game   @relation("GameCollectionItemToGame", fields: [gameId], references: [id])
+
+  collectionId String
+  collection   Collection @relation("GameCollectionItemToCollection", fields: [collectionId], references: [id])
 }
 
 model ManyGamePlatform {
