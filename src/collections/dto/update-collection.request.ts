@@ -1,10 +1,6 @@
-import { IsNotEmpty, IsString, IsUUID } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class UpdateCollectionRequest {
-    @IsNotEmpty()
-    @IsUUID()
-    id: string;
-
     @IsNotEmpty()
     @IsString()
     title: string;

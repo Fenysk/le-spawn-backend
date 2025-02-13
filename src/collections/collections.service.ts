@@ -69,17 +69,18 @@ export class CollectionsService {
 
     async updateCollection(
         userId: string,
+        id: string,
         updateCollectionData: UpdateCollectionRequest
     ): Promise<Collection> {
         const collection = await this.prismaService.collection.findUnique({
-            where: { id: updateCollectionData.id }
+            where: { id }
         });
 
         if (!collection || collection.userId !== userId)
             throw new NotFoundException('Collection not found or unauthorized');
 
         return this.prismaService.collection.update({
-            where: { id: updateCollectionData.id },
+            where: { id },
             data: updateCollectionData
         });
     }

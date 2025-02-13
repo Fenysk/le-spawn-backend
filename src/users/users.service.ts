@@ -68,6 +68,11 @@ export class UsersService {
                             pseudo: createUserRequest.pseudo,
                             displayName: createUserRequest.pseudo,
                         }
+                    },
+                    collections: {
+                        create: {
+                            title: `Collection de ${createUserRequest.pseudo}`,
+                        }
                     }
                 }
             });

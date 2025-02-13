@@ -32,12 +32,13 @@ export class CollectionsController {
         return this.collectionsService.createCollection(user.id, createCollectionDto);
     }
 
-    @Put()
+    @Put(':id')
     updateCollection(
         @GetUser() user: User,
+        @Param('id') id: string,
         @Body() updateCollectionDto: UpdateCollectionRequest
     ): Promise<Collection> {
-        return this.collectionsService.updateCollection(user.id, updateCollectionDto);
+        return this.collectionsService.updateCollection(user.id, id, updateCollectionDto);
     }
 
     @Delete(':id')
