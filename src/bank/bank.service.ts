@@ -54,7 +54,7 @@ export class BankService {
                 barcodes: [barcode],
                 category: igdbGame.category,
                 firstReleaseDate: new Date(igdbGame.first_release_date * 1000),
-                franchises: igdbGame.franchises.map(franchise => franchise.name),
+                franchises: igdbGame.franchises.map(franchise => franchise.name) || [],
                 genres: igdbGame.genres.map(genre => genre.name),
                 igdbGameId: igdbGame.id,
                 name: igdbGame.name,

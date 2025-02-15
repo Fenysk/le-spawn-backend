@@ -4,7 +4,7 @@ export interface IGDBGameResponse {
   category: number;
   cover: Cover;
   first_release_date: number;
-  franchises: Franchise[];
+  franchises?: Franchise[];
   genres: Genre[];
   name: string;
   platforms: Platform[];

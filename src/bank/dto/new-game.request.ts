@@ -23,8 +23,9 @@ export class NewGameRequest {
     firstReleaseDate: Date;
 
     @IsArray()
+    @IsOptional()
     @IsString({ each: true })
-    franchises: string[];
+    franchises?: string[];
 
     @IsArray()
     @IsString({ each: true })
