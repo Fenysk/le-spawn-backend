@@ -1,4 +1,4 @@
-export interface IGDBMetadata {
+export interface ScandexIGDBMetadata {
     id: number;
     name: string;
     platform: {

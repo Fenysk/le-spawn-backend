@@ -6,10 +6,12 @@ import { PlatformsBankService } from 'src/bank/platforms/platforms-bank.service'
 import { PlatformsController } from './platforms/platforms.controller';
 import { BankService } from './bank.service';
 import { GamesController } from './games/games.controller';
+import { UpcitemdbModule } from 'src/upcitemdb/upcitemdb.module';
 
 @Module({
   imports: [
     ScandexModule,
+    UpcitemdbModule,
     IgdbModule,
   ],
   controllers: [

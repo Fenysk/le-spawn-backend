@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LookupResponse } from './interface/lookup.response';
+import { ScandexLookupResponse } from './interface/lookup.response';
 import { ApiService } from '../common/api.service';
 
 @Injectable()
@@ -20,9 +20,9 @@ export class ScandexService {
         barcode
     }: {
         barcode: number
-    }): Promise<LookupResponse> {
+    }): Promise<ScandexLookupResponse> {
         try {
-            const response = await this.apiService.requestToApi<LookupResponse>({
+            const response = await this.apiService.requestToApi<ScandexLookupResponse>({
                 baseUrl: this.baseUrl,
                 endpoint: '/lookup',
                 params: { value: barcode },

@@ -34,7 +34,7 @@ export class IgdbService implements OnModuleInit {
         }
     }
 
-    async getGameById(id: number): Promise<IGDBGameResponse> {
+    async getGameById(id: number): Promise<IGDBGameResponse[]> {
         try {
             await this.ensureValidToken();
             const { data } = await this.client
@@ -61,12 +61,48 @@ export class IgdbService implements OnModuleInit {
                 .where(`id = ${id}`)
                 .request('/games');
 
-            const game = data[0];
+            const games = data as IGDBGameResponse[];
 
-            if (!game)
+            if (!games)
                 throw new NotFoundException('Game not found in IGDB');
 
-            return game;
+            return games;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async getGamesFromName(name: string): Promise<IGDBGameResponse[]> {
+        try {
+            await this.ensureValidToken();
+            const { data } = await this.client
+                .fields([
+                    'alternative_names.*',
+                    'category', // enum
+                    'cover.*',
+                    'first_release_date', // unix timestamp
+                    'franchise.*',
+                    'franchises.*',
+                    'genres.*',
+                    'keywords.*',
+                    'name',
+                    'platforms.*',
+                    'release_dates.*',
+                    'screenshots.*',
+                    'slug',
+                    'storyline',
+                    'summary',
+                    'themes.*',
+                    'url',
+                    'videos.*',
+                ])
+                .search(name)
+                .request('/games');
+
+            const games = data as IGDBGameResponse[];
+
+            return games;
         } catch (error) {
             console.error(error);
             throw error;
@@ -80,12 +116,12 @@ export class IgdbService implements OnModuleInit {
                 .fields(['*'])
                 .where(`id = ${id}`)
                 .request('/platforms');
-    
+
             const platform = data[0];
-    
+
             if (!platform)
                 throw new NotFoundException('Platform not found in IGDB');
-    
+
             return platform;
         } catch (error) {
             console.error(error);

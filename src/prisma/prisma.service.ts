@@ -5,6 +5,18 @@ import { Prisma, PrismaClient } from '@prisma/client';
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
     private readonly logger = new Logger(PrismaService.name);
 
+    constructor() {
+        super();
+        this.$use(async (params, next) => {
+            this.logger.log(`Executing ${params.model} query: ${params.action}`);
+            try {
+                return await next(params);
+            } catch (error) {
+                this.handleError(error);
+            }
+        });
+    }
+
     async onModuleInit() {
         await this.$connect()
             .then(() => this.logger.log('Connected to the database'))
@@ -18,7 +30,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     }
 
     handleError(error: Error): never {
-        this.logger.error('Database error:', error);
 
         if (error.name === 'PrismaClientKnownRequestError') {
             const prismaError = error as Prisma.PrismaClientKnownRequestError;
@@ -59,6 +70,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
                 description: 'The query contains invalid parameters'
             });
         }
+
+        this.logger.error('Database error:', error);
 
         throw new InternalServerErrorException('Unexpected database error', {
             cause: error

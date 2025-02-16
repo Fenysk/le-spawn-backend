@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { NewPlatformRequest } from '../dto/new-platform.request';
 import { Platform, Prisma } from '@prisma/client';
@@ -54,13 +54,24 @@ export class PlatformsBankService {
         platformData: NewPlatformRequest
     ): Promise<Platform> {
         try {
-            const newPlatform = await this.prismaService.platform.create({
-                data: platformData
-            })
-
+            const newPlatform = await this.prismaService.platform.upsert({
+                where: {
+                    igdbPlatformId: platformData.igdbPlatformId
+                },
+                update: {
+                    name: platformData.name,
+                    abbreviation: platformData.abbreviation,
+                    generation: platformData.generation
+                },
+                create: {
+                    igdbPlatformId: platformData.igdbPlatformId,
+                    name: platformData.name,
+                    abbreviation: platformData.abbreviation,
+                    generation: platformData.generation
+                }
+            });
             return newPlatform;
         } catch (error) {
-            console.error(error);
             throw error;
         }
     }

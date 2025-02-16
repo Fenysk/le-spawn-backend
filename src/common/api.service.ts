@@ -20,12 +20,14 @@ export class ApiService {
         endpoint,
         headers = {},
         params = {},
+        body,
         method = MethodEnum.GET
     }: {
         baseUrl: string;
         endpoint?: string;
         headers?: Record<string, any>;
         params?: Record<string, any>;
+        body?: string;
         method?: MethodEnum;
     }): Promise<T> {
         const url = new URL(endpoint ? `${baseUrl}${endpoint}` : baseUrl);
@@ -39,6 +41,9 @@ export class ApiService {
                 ...headers,
             },
         };
+
+        if (body)
+            options.body = JSON.stringify(body);
 
         try {
             const response = await fetch(url.toString(), options);

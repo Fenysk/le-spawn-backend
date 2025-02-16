@@ -11,6 +11,7 @@ import { BankModule } from './bank/bank.module';
 import { CollectionsModule } from './collections/collections.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { UpcitemdbModule } from './upcitemdb/upcitemdb.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
     TwitchModule,
     CollectionsModule,
     UsersModule,
+    UpcitemdbModule,
   ],
   controllers: [
     AppController

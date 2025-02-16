@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import { GamesBankService } from './games-bank.service';
 import { SearchGamesRequest } from '../dto/search-games.request';
 import { Game } from '@prisma/client';
 import { BankService } from '../bank.service';
+import { AddBarcodeToGameRequest } from '../dto/add-barcode-to-game.request';
 
 @Controller('games')
 export class GamesController {
@@ -21,7 +22,14 @@ export class GamesController {
     @Get('barcode/:barcode')
     async getGameWithBarcode(
         @Param('barcode') barcode: string
+    ): Promise<Game[]> {
+        return this.bankService.getGamesFromBarcode(barcode);
+    }
+
+    @Put('barcode')
+    async addBarcodeToGame(
+        @Body() data: AddBarcodeToGameRequest
     ): Promise<Game> {
-        return this.bankService.getGameFromBarcode(barcode);
+        return this.gamesBankService.addBarcodeToGame(data);
     }
 }

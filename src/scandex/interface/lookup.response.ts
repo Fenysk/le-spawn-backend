@@ -1,10 +1,10 @@
-import { IGDBMetadata } from "./igdb-metadata.interface";
+import { ScandexIGDBMetadata } from "./igdb-metadata.interface";
 import { ScandexApiResponse } from "./scandex-api.response";
 
-export interface LookupResponse extends ScandexApiResponse {
+export interface ScandexLookupResponse extends ScandexApiResponse {
   id?: number;
   is_suggestion?: boolean;
   name?: string;
   platform?: string;
-  igdb_metadata?: IGDBMetadata | null;
+  igdb_metadata?: ScandexIGDBMetadata | null;
 }
