@@ -63,12 +63,11 @@ export class IgdbService implements OnModuleInit {
 
             const games = data as IGDBGameResponse[];
 
-            if (!games)
+            if (!games.length)
                 throw new NotFoundException('Game not found in IGDB');
 
             return games;
         } catch (error) {
-            console.error(error);
             throw error;
         }
     }
@@ -102,9 +101,11 @@ export class IgdbService implements OnModuleInit {
 
             const games = data as IGDBGameResponse[];
 
+            if (!games.length)
+                throw new NotFoundException('Game not found in IGDB');
+
             return games;
         } catch (error) {
-            console.error(error);
             throw error;
         }
     }
@@ -124,7 +125,6 @@ export class IgdbService implements OnModuleInit {
 
             return platform;
         } catch (error) {
-            console.error(error);
             throw error;
         }
     }

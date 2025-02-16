@@ -1,6 +1,6 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiService } from '../common/api.service';
+import { ApiService } from '../../common/api.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UpcitemdbApiResponse } from './interface/upcitemdb-api.response';
 
@@ -43,6 +43,8 @@ export class UpcitemdbService {
             if (!response.items || response.items.length === 0) {
                 throw new NotFoundException('Item not found');
             }
+
+            console.log(response.items);
 
             return response;
         } catch (error) {

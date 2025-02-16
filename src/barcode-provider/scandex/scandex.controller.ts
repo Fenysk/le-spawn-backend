@@ -9,7 +9,7 @@ export class ScandexController {
 
     @Get('lookup/:barcode')
     lookup(
-        @Param('barcode') barcode: number
+        @Param('barcode') barcode: string
     ) {
         return this.scandexService.lookup({ barcode });
     }
