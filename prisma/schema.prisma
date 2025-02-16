@@ -99,6 +99,10 @@ model GameCollectionItem {
 
   collectionId String
   collection   Collection @relation("GameCollectionItemToCollection", fields: [collectionId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([gameId, collectionId])
 }
 
 model ManyGamePlatform {

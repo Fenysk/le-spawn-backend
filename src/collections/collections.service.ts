@@ -18,8 +18,11 @@ export class CollectionsService {
                 where: { userId },
                 include: {
                     gameItems: {
+                        orderBy: {
+                            createdAt: 'desc',
+                        },
                         include: {
-                            game: true
+                            game: true,
                         }
                     }
                 }
