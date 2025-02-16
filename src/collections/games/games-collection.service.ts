@@ -22,7 +22,10 @@ export class GamesCollectionService {
             if (collection.userId !== userId)
                 throw new UnauthorizedException('Unauthorized');
 
-            const isGameExist = await this.gamesBankService.searchGames({ id: gameItemData.gameId });
+            const isGameAlreadyExist = await this.gamesBankService.searchGames({ id: gameItemData.gameId });
+
+            if (!isGameAlreadyExist)
+                console.log('Game not found');
 
             const newGameCollectionItem = await this.prismaService.gameCollectionItem.create({
                 data: {
@@ -34,7 +37,8 @@ export class GamesCollectionService {
                     statePaper: gameItemData.statePaper,
                     collection: { connect: { id: gameItemData.collectionId } },
                     game: { connect: { id: gameItemData.gameId } }
-                }
+                },
+                include: { game: true }
             });
 
             return newGameCollectionItem;
