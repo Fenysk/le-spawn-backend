@@ -8,7 +8,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     constructor() {
         super();
         this.$use(async (params, next) => {
-            this.logger.log(`Executing ${params.model} query: ${params.action}`);
+            this.logger.log(`${params.model} ==> ${params.action}`);
             try {
                 return await next(params);
             } catch (error) {

@@ -6,17 +6,20 @@ import { PricechartingService } from './pricecharting/pricecharting.service';
 import { PricechartingController } from './pricecharting/pricecharting.controller';
 import { ScandexController } from './scandex/scandex.controller';
 import { UpcitemdbController } from './upcitemdb/upcitemdb.controller';
+import { BarcodespiderService } from './barcodespider/barcodespider.service';
+import { BarcodespiderController } from './barcodespider/barcodespider.controller';
 
 @Module({
     controllers: [
         PricechartingController,
         ScandexController,
-        UpcitemdbController
+        UpcitemdbController,
+        BarcodespiderController
     ],
     imports: [
         CommonModule,
     ],
-    providers: [ScandexService, UpcitemdbService, PricechartingService],
-    exports: [ScandexService, UpcitemdbService, PricechartingService],
+    providers: [ScandexService, UpcitemdbService, PricechartingService, BarcodespiderService],
+    exports: [ScandexService, UpcitemdbService, PricechartingService, BarcodespiderService],
 })
 export class BarcodeProviderModule { }

@@ -9,6 +9,7 @@ import { NewPlatformRequest } from './dto/new-platform.request';
 import { IGDBGameResponse } from 'src/igdb/interface/igdb-game.response';
 import { UpcitemdbService } from 'src/barcode-provider/upcitemdb/upcitemdb.service';
 import { PricechartingService } from 'src/barcode-provider/pricecharting/pricecharting.service';
+import { BarcodespiderService } from 'src/barcode-provider/barcodespider/barcodespider.service';
 
 @Injectable()
 export class BankService {
@@ -19,6 +20,7 @@ export class BankService {
         private readonly platformsBankService: PlatformsBankService,
         private readonly upcitemdbService: UpcitemdbService,
         private readonly pricechartingService: PricechartingService,
+        private readonly barcodespiderService: BarcodespiderService,
     ) { }
 
     private fromUnixTimestamp(timestamp: number): Date {
@@ -56,61 +58,17 @@ export class BankService {
         } catch (error) {
             let igdbGames: IGDBGameResponse[] = [];
 
-            if (!igdbGames.length) {
-                try {
-                    const pricechartingGameInfo = await this.pricechartingService.lookup({ barcode });
+            if (!igdbGames.length)
+                igdbGames = await this.fetchFromPriceCharting(barcode);
 
-                    const productName = pricechartingGameInfo['product-name'];
-                    try {
-                        igdbGames = await this.igdbService.getGamesFromName(productName);
-                    } catch (error) {
-                        if (error?.response?.statusCode === 404) {
-                            igdbGames = [];
-                        } else {
-                            throw error;
-                        }
-                    }
-                    if (!igdbGames.length && productName.includes(' ')) {
-                        igdbGames = await this.checkOtherPossibilities(productName);
-                    }
-                } catch (error) {
-                    console.error('No game found in PriceCharting API');
-                }
-            }
+            if (!igdbGames.length)
+                igdbGames = await this.fetchFromUpcitemdb(barcode);
 
-            if (!igdbGames.length) {
-                try {
-                    const upcitemdbGameInfo = await this.upcitemdbService.lookup({ barcode: Number(barcode) });
-                    for (const item of upcitemdbGameInfo.items) {
-                        const productName = item.title;
+            if (!igdbGames.length)
+                igdbGames = await this.fetchFromScandex(barcode);
 
-                        try {
-                            igdbGames = await this.igdbService.getGamesFromName(productName);
-                        } catch (error) {
-                            if (error?.response?.statusCode === 404) {
-                                igdbGames = [];
-                            } else {
-                                throw error;
-                            }
-                        }
-
-                        if (!igdbGames.length && productName.includes(' ')) {
-                            igdbGames = await this.checkOtherPossibilities(productName);
-                        }
-                    }
-                } catch (error) {
-                    console.error('No game found in Upcitemdb API');
-                }
-            }
-
-            if (!igdbGames.length) {
-                try {
-                    const scanDexGameInfo = await this.scandexService.lookup({ barcode: barcode });
-                    igdbGames = await this.igdbService.getGameById(scanDexGameInfo.igdb_metadata.id);
-                } catch (error) {
-                    console.error('No game found in ScanDex API');
-                }
-            }
+            if (!igdbGames.length)
+                igdbGames = await this.fetchFromBarcodespider(barcode);
 
             if (!igdbGames.length) {
                 throw new NotFoundException('Game not found');
@@ -159,4 +117,93 @@ export class BankService {
             return newGames;
         }
     }
+
+    private async fetchFromBarcodespider(barcode: string): Promise<IGDBGameResponse[]> {
+        let igdbGames: IGDBGameResponse[] = [];
+        try {
+            const barcodespiderInfo = await this.barcodespiderService.lookup({ barcode });
+            const productName = barcodespiderInfo.item_attributes.title;
+
+            try {
+                igdbGames = await this.igdbService.getGamesFromName(productName);
+            } catch (error) {
+                if (error?.response?.statusCode === 404) {
+                    igdbGames = [];
+                } else {
+                    throw error;
+                }
+            }
+
+            if (!igdbGames.length && productName.includes(' '))
+                igdbGames = await this.checkOtherPossibilities(productName);
+
+        } catch (error) {
+            console.error('No game found in Barcodespider API');
+        }
+        return igdbGames;
+    }
+
+    private async fetchFromScandex(barcode: string): Promise<IGDBGameResponse[]> {
+        let igdbGames: IGDBGameResponse[] = [];
+        try {
+            const scanDexGameInfo = await this.scandexService.lookup({ barcode: barcode });
+            igdbGames = await this.igdbService.getGameById(scanDexGameInfo.igdb_metadata.id);
+        } catch (error) {
+            console.error('No game found in ScanDex API');
+        }
+        return igdbGames;
+    }
+
+    private async fetchFromUpcitemdb(barcode: string): Promise<IGDBGameResponse[]> {
+        let igdbGames: IGDBGameResponse[] = [];
+        try {
+            const upcitemdbGameInfo = await this.upcitemdbService.lookup({ barcode: Number(barcode) });
+            for (const item of upcitemdbGameInfo.items) {
+                const productName = item.title;
+
+                try {
+                    igdbGames = await this.igdbService.getGamesFromName(productName);
+                } catch (error) {
+                    if (error?.response?.statusCode === 404) {
+                        igdbGames = [];
+                    } else {
+                        throw error;
+                    }
+                }
+
+                if (!igdbGames.length && productName.includes(' '))
+                    igdbGames = await this.checkOtherPossibilities(productName);
+
+            }
+        } catch (error) {
+            console.error('No game found in Upcitemdb API');
+        }
+        return igdbGames;
+    }
+
+    private async fetchFromPriceCharting(barcode: string): Promise<IGDBGameResponse[]> {
+        let igdbGames: IGDBGameResponse[] = [];
+        try {
+            const pricechartingGameInfo = await this.pricechartingService.lookup({ barcode });
+
+            const productName = pricechartingGameInfo['product-name'];
+            try {
+                igdbGames = await this.igdbService.getGamesFromName(productName);
+            } catch (error) {
+                if (error?.response?.statusCode === 404) {
+                    igdbGames = [];
+                } else {
+                    throw error;
+                }
+            }
+            if (!igdbGames.length && productName.includes(' '))
+                igdbGames = await this.checkOtherPossibilities(productName);
+
+        } catch (error) {
+            console.error('No game found in PriceCharting API');
+        }
+
+        return igdbGames;
+    }
+
 }
