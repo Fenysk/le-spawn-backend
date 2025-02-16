@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LookupResponse } from './interface/lookup.response';
-
 import { ApiService } from '../common/api.service';
 
 @Injectable()
@@ -32,14 +31,17 @@ export class ScandexService {
                 }
             });
 
-            if ('error' in response)
+            if ('error' in response) {
                 throw new BadRequestException(response.error);
+            }
 
-            if ('message' in response && response.message.includes('No results for this barcode'))
+            if ('message' in response && response.message.includes('No results for this barcode')) {
                 throw new NotFoundException('Game not found');
+            }
 
-            if (response.id && !response.igdb_metadata && !response.name)
+            if (response.id && !response.igdb_metadata && !response.name) {
                 throw new NotFoundException('Game not found');
+            }
 
             return response;
         } catch (error) {
