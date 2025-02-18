@@ -1,12 +1,14 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiService } from '../../common/api.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UpcitemdbApiResponse } from './interface/upcitemdb-api.response';
-
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class UpcitemdbService {
+    private readonly logger = new Logger(UpcitemdbService.name);
+
     private readonly baseUrl: string;
     private readonly apiKey: string;
 
@@ -33,22 +35,34 @@ export class UpcitemdbService {
                 }
             });
 
-            if (response.error) {
-                if (response.code === 'EXCEED_LIMIT')
-                    throw new ServiceUnavailableException('Invalid barcode');
+            switch (response.code) {
+                case 'INVALID_UPC':
+                    throw new BadRequestException(response.message);
+                case 'INVALID_QUERY':
+                    throw new BadRequestException(response.message);
+                case 'NOT_FOUND':
+                    throw new NotFoundException(response.message);
+                case 'EXCEED_LIMIT':
+                    throw new HttpException(response.message, HttpStatus.TOO_MANY_REQUESTS);
+                case 'SERVER_ERR':
+                    throw new ServiceUnavailableException(response.message);
+                default:
+                    if (response.error)
+                        throw new ServiceUnavailableException(response.message);
 
-                throw new BadRequestException(response.error);
             }
 
-            if (!response.items || response.items.length === 0) {
+            if (!response.items || response.items.length === 0)
                 throw new NotFoundException('Item not found');
-            }
-
-            console.log(response.items);
 
             return response;
         } catch (error) {
-            throw error;
+            this.logger.error(error.message);
+
+            if (error instanceof HttpException)
+                throw error;
+
+            throw new BadRequestException('Failed to process the request');
         }
     }
 }

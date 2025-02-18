@@ -1,10 +1,13 @@
-import { Injectable, BadRequestException, NotFoundException, UnauthorizedException, ServiceUnavailableException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, UnauthorizedException, ServiceUnavailableException, HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { BarcodespiderApiResponse } from './interfaces/barcodespider-api.response';
 import { ApiService } from '../../common/api.service';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class BarcodespiderService {
+    private readonly logger = new Logger(BarcodespiderService.name);
+
     private readonly baseUrl: string;
     private readonly apiToken: string;
 
@@ -41,9 +44,8 @@ export class BarcodespiderService {
 
             switch (response.item_response.code) {
                 case 200:
-                    if (!response.item_attributes) {
+                    if (!response.item_attributes)
                         throw new NotFoundException('Item not found');
-                    }
                     return response;
                 case 401:
                     throw new UnauthorizedException('Invalid API token');
@@ -59,16 +61,12 @@ export class BarcodespiderService {
                     );
             }
         } catch (error) {
-            if (error instanceof BadRequestException
-                || error instanceof NotFoundException
-                || error instanceof UnauthorizedException
-                || error instanceof ServiceUnavailableException) {
-                throw error;
-            }
+            this.logger.error(error.message);
 
-            throw new ServiceUnavailableException(
-                'Unable to connect to Barcodespider API. Please try again later.'
-            );
+            if (error instanceof HttpException)
+                throw error;
+
+            throw new ServiceUnavailableException('Unable to connect to Barcodespider API. Please try again later.');
         }
     }
 }

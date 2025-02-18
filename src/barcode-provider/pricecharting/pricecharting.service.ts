@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiService, MethodEnum } from '../../common/api.service';
 import { PricechartingApiResponse } from './interface/pricecharting-api.response';
@@ -6,6 +6,8 @@ import axios from 'axios';
 
 @Injectable()
 export class PricechartingService {
+    private readonly logger = new Logger(PricechartingService.name);
+
     private readonly baseUrl: string;
     private apiKey: string;
     private tokenExpiration: Date;
@@ -68,18 +70,22 @@ export class PricechartingService {
             });
 
             if (!response || response.error) {
-                throw new BadRequestException(response?.["error-message"] || 'Invalid request or no data returned');
+                const errorMessage = response?.["error-message"] || 'Invalid request or no data returned';
+                throw new BadRequestException(errorMessage);
             }
 
             if (!response.id || !response['product-name']) {
-                throw new NotFoundException('Product not found');
+                const errorMessage = response?.["error-message"] || 'Invalid request or no data returned';
+                throw new NotFoundException(errorMessage);
             }
 
             return response;
         } catch (error) {
-            if (error instanceof BadRequestException || error instanceof NotFoundException) {
+            this.logger.error(error.message);
+
+            if (error instanceof HttpException)
                 throw error;
-            }
+
             throw new BadRequestException('Failed to process the request');
         }
     }

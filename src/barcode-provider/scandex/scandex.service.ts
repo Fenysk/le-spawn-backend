@@ -1,10 +1,13 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ScandexLookupResponse } from './interface/lookup.response';
 import { ApiService } from '../../common/api.service';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class ScandexService {
+    private readonly logger = new Logger(ScandexService.name);
+
     private readonly baseUrl: string;
     private readonly accessToken: string;
 
@@ -31,21 +34,21 @@ export class ScandexService {
                 }
             });
 
-            if ('error' in response) {
-                throw new BadRequestException(response.error);
-            }
+            if ('error' in response)
+                throw new BadRequestException(response.error ?? response.message ?? 'Invalid request');
 
-            if ('message' in response && response.message.includes('No results for this barcode')) {
+            const gameNotFound = (('message' in response && response.message.includes('No results for this barcode')) || ('id' in response && !response.igdb_metadata && !response.name));
+            if (gameNotFound)
                 throw new NotFoundException('Game not found');
-            }
-
-            if (response.id && !response.igdb_metadata && !response.name) {
-                throw new NotFoundException('Game not found');
-            }
 
             return response;
         } catch (error) {
-            throw error;
+            this.logger.error(error.message);
+
+            if (error instanceof HttpException)
+                throw error;
+
+            throw new BadRequestException('Failed to process the request');
         }
     }
 }

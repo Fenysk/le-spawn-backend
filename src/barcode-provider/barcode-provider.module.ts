@@ -10,14 +10,14 @@ import { BarcodespiderService } from './barcodespider/barcodespider.service';
 import { BarcodespiderController } from './barcodespider/barcodespider.controller';
 
 @Module({
+    imports: [
+        CommonModule,
+    ],
     controllers: [
         PricechartingController,
         ScandexController,
         UpcitemdbController,
         BarcodespiderController
-    ],
-    imports: [
-        CommonModule,
     ],
     providers: [ScandexService, UpcitemdbService, PricechartingService, BarcodespiderService],
     exports: [ScandexService, UpcitemdbService, PricechartingService, BarcodespiderService],
