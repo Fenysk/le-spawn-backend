@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ScandexService } from '../barcode-provider/scandex/scandex.service';
 import { IgdbService } from '../igdb/igdb.service';
 import { GamesBankService } from './games/games-bank.service';
@@ -14,9 +14,11 @@ import { BarcodespiderService } from 'src/barcode-provider/barcodespider/barcode
 @Injectable()
 export class BankService {
     constructor(
+        @Inject(forwardRef(() => GamesBankService))
+        private readonly gamesBankService: GamesBankService,
+        
         private readonly scandexService: ScandexService,
         private readonly igdbService: IgdbService,
-        private readonly gamesBankService: GamesBankService,
         private readonly platformsBankService: PlatformsBankService,
         private readonly upcitemdbService: UpcitemdbService,
         private readonly pricechartingService: PricechartingService,
@@ -53,7 +55,7 @@ export class BankService {
 
     async getGamesFromBarcode(barcode: string): Promise<Game[]> {
         try {
-            const games = await this.gamesBankService.searchGames({ barcode });
+            const games = await this.gamesBankService.searchGamesInBank({ barcode });
             return games;
         } catch (error) {
             let igdbGames: IGDBGameResponse[] = [];
@@ -74,48 +76,52 @@ export class BankService {
                 throw new NotFoundException('Game not found');
             }
 
-            const newGames = await Promise.all(igdbGames.map(async (igdbGame) => {
-                const platforms = await Promise.all((igdbGame.platforms || []).map(async platformFromIgdb => {
-                    try {
-                        return await this.platformsBankService.getPlatformWithIgdbId(+platformFromIgdb.id);
-                    } catch (error) {
-                        const igdbPlatform = await this.igdbService.getPlatformById(+platformFromIgdb.id);
-                        const platformData: NewPlatformRequest = {
-                            igdbPlatformId: +platformFromIgdb.id,
-                            name: igdbPlatform.name,
-                            abbreviation: igdbPlatform.abbreviation,
-                            generation: igdbPlatform.generation
-                        };
-                        return await this.platformsBankService.addPlatformToBank(platformData);
-                    }
-                }));
-
-                const barcodes = igdbGames.length === 1 ? [barcode] : [];
-
-                const releaseDate = igdbGame.first_release_date
-                    ? this.fromUnixTimestamp(igdbGame.first_release_date)
-                    : null;
-
-                const newGameRequest: NewGameRequest = {
-                    barcodes: barcodes,
-                    category: igdbGame.category,
-                    firstReleaseDate: releaseDate,
-                    franchises: (igdbGame.franchises || []).map(franchise => franchise.name),
-                    genres: (igdbGame.genres || []).map(genre => genre.name),
-                    igdbGameId: igdbGame.id,
-                    name: igdbGame.name,
-                    screenshotsUrl: (igdbGame.screenshots || []).map(screenshot => this.igdbService.getScreenshotFullUrl(screenshot.url)),
-                    storyline: igdbGame.storyline,
-                    summary: igdbGame.summary,
-                    coverUrl: igdbGame.cover ? this.igdbService.getGameCoverFullUrl(igdbGame.cover.url) : undefined,
-                    platformIds: platforms.map(platform => platform.id)
-                };
-
-                return await this.gamesBankService.addGameToBank(newGameRequest);
-            }));
+            const newGames = await this.addNewGameFromIgdbGames(igdbGames, barcode);
 
             return newGames;
         }
+    }
+
+    async addNewGameFromIgdbGames(igdbGames: IGDBGameResponse[], barcode?: string) {
+        return await Promise.all(igdbGames.map(async (igdbGame) => {
+            const platforms = await Promise.all((igdbGame.platforms || []).map(async (platformFromIgdb) => {
+                try {
+                    return await this.platformsBankService.getPlatformWithIgdbId(+platformFromIgdb.id);
+                } catch (error) {
+                    const igdbPlatform = await this.igdbService.getPlatformById(+platformFromIgdb.id);
+                    const platformData: NewPlatformRequest = {
+                        igdbPlatformId: +platformFromIgdb.id,
+                        name: igdbPlatform.name,
+                        abbreviation: igdbPlatform.abbreviation,
+                        generation: igdbPlatform.generation
+                    };
+                    return await this.platformsBankService.addPlatformToBank(platformData);
+                }
+            }));
+
+            const barcodes = barcode && igdbGames.length === 1 ? [barcode] : [];
+
+            const releaseDate = igdbGame.first_release_date
+                ? this.fromUnixTimestamp(igdbGame.first_release_date)
+                : null;
+
+            const newGameRequest: NewGameRequest = {
+                barcodes: barcodes,
+                category: igdbGame.category,
+                firstReleaseDate: releaseDate,
+                franchises: (igdbGame.franchises || []).map(franchise => franchise.name),
+                genres: (igdbGame.genres || []).map(genre => genre.name),
+                igdbGameId: igdbGame.id,
+                name: igdbGame.name,
+                screenshotsUrl: (igdbGame.screenshots || []).map(screenshot => this.igdbService.getScreenshotFullUrl(screenshot.url)),
+                storyline: igdbGame.storyline,
+                summary: igdbGame.summary,
+                coverUrl: igdbGame.cover ? this.igdbService.getGameCoverFullUrl(igdbGame.cover.url) : undefined,
+                platformIds: platforms.map(platform => platform.id)
+            };
+
+            return await this.gamesBankService.addGameToBank(newGameRequest);
+        }));
     }
 
     private async fetchFromBarcodespider(barcode: string): Promise<IGDBGameResponse[]> {

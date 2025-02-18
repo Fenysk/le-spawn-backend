@@ -1,20 +1,24 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { NewGameRequest } from '../dto/new-game.request';
+import { ConflictException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Game, Prisma } from '@prisma/client';
 import { getGameCategoryEnum } from 'src/igdb/enum/game-category.enum';
 import { IgdbService } from 'src/igdb/igdb.service';
-import { SearchGamesRequest } from '../dto/search-games.request';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { BankService } from '../bank.service';
 import { AddBarcodeToGameRequest } from '../dto/add-barcode-to-game.request';
+import { NewGameRequest } from '../dto/new-game.request';
+import { SearchGamesRequest } from '../dto/search-games.request';
 
 @Injectable()
 export class GamesBankService {
     constructor(
         private readonly prismaService: PrismaService,
         private readonly igdbService: IgdbService,
+
+        @Inject(forwardRef(() => BankService))
+        private readonly bankService: BankService,
     ) { }
 
-    async searchGames(searchGamesDto: SearchGamesRequest): Promise<Game[]> {
+    async searchGamesInBank(searchGamesDto: SearchGamesRequest): Promise<Game[]> {
         try {
             const whereConditions: Prisma.GameWhereInput[] = [];
 
@@ -28,13 +32,32 @@ export class GamesBankService {
                 whereConditions.push({ barcodes: { has: searchGamesDto.barcode } });
 
             const games = await this.prismaService.game.findMany({
-                where: whereConditions.length ? { OR: whereConditions } : {}
+                where: whereConditions.length ? { OR: whereConditions } : {},
+                include: {
+                    platformsRelation: {
+                        include: {
+                            platform: true
+                        }
+                    }
+                }
             });
 
             if (!games.length)
                 throw new NotFoundException('No games found matching the search criteria');
 
             return games;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async searchGamesInProviders(searchGamesDto: SearchGamesRequest) {
+        try {
+            const igdbGames = await this.igdbService.getGamesFromName(searchGamesDto.query);
+
+            const newGames = await this.bankService.addNewGameFromIgdbGames(igdbGames);
+
+            return newGames;
         } catch (error) {
             throw error;
         }
@@ -77,6 +100,13 @@ export class GamesBankService {
                                 }
                             }
                         }))
+                    }
+                },
+                include: {
+                    platformsRelation: {
+                        include: {
+                            platform: true
+                        }
                     }
                 }
             });

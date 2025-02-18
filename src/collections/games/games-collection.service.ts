@@ -22,7 +22,7 @@ export class GamesCollectionService {
             if (collection.userId !== userId)
                 throw new UnauthorizedException('Unauthorized');
 
-            const isGameAlreadyExist = await this.gamesBankService.searchGames({ id: gameItemData.gameId });
+            const isGameAlreadyExist = await this.gamesBankService.searchGamesInBank({ id: gameItemData.gameId });
 
             if (!isGameAlreadyExist)
                 console.log('Game not found');

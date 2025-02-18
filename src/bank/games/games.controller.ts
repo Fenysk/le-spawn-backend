@@ -12,11 +12,18 @@ export class GamesController {
         private readonly bankService: BankService
     ) { }
 
-    @Get()
-    async searchGames(
+    @Get('bank')
+    async searchGamesInBank(
         @Body() searchGamesDto: SearchGamesRequest
     ): Promise<Game[]> {
-        return this.gamesBankService.searchGames(searchGamesDto);
+        return this.gamesBankService.searchGamesInBank(searchGamesDto);
+    }
+
+    @Get('providers')
+    async searchGamesInProviders(
+        @Body() searchGamesDto: SearchGamesRequest
+    ) {
+        return this.gamesBankService.searchGamesInProviders(searchGamesDto);
     }
 
     @Get('barcode/:barcode')

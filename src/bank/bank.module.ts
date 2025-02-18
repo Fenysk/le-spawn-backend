@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module} from '@nestjs/common';
 import { IgdbModule } from 'src/igdb/igdb.module';
 import { GamesBankService } from 'src/bank/games/games-bank.service';
 import { PlatformsBankService } from 'src/bank/platforms/platforms-bank.service';
@@ -22,8 +22,9 @@ import { BarcodeProviderModule } from 'src/barcode-provider/barcode-provider.mod
     PlatformsBankService,
   ],
   exports: [
-    GamesBankService,
     BankService,
+    GamesBankService,
+    PlatformsBankService,
   ]
 })
 export class BankModule { }

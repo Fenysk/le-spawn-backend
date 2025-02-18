@@ -129,11 +129,13 @@ export class IgdbService implements OnModuleInit {
         }
     }
 
-    getGameCoverFullUrl(coverUrl: string): string {
+    getGameCoverFullUrl(coverUrl: string | undefined): string {
+        if (!coverUrl) return '';
         return coverUrl.replace(/^(https?:)?\/\//, 'https://').replace('t_thumb', 't_cover_big_2x');
     }
 
-    getScreenshotFullUrl(screenshotUrl: string): string {
+    getScreenshotFullUrl(screenshotUrl: string | undefined): string {
+        if (!screenshotUrl) return '';
         return screenshotUrl.replace(/^(https?:)?\/\//, 'https://').replace('t_thumb', 't_screenshot_huge');
     }
 }
