@@ -14,18 +14,18 @@ export class GamesBankService {
         private readonly igdbService: IgdbService,
     ) { }
 
-    async searchGames(searchGameDto: SearchGamesRequest): Promise<Game[]> {
+    async searchGames(searchGamesDto: SearchGamesRequest): Promise<Game[]> {
         try {
             const whereConditions: Prisma.GameWhereInput[] = [];
 
-            if (searchGameDto.id)
-                whereConditions.push({ id: searchGameDto.id });
+            if (searchGamesDto.id)
+                whereConditions.push({ id: searchGamesDto.id });
 
-            if (searchGameDto.query)
-                whereConditions.push({ name: { contains: searchGameDto.query, mode: 'insensitive' } });
+            if (searchGamesDto.query)
+                whereConditions.push({ name: { contains: searchGamesDto.query, mode: 'insensitive' } });
 
-            if (searchGameDto.barcode)
-                whereConditions.push({ barcodes: { has: searchGameDto.barcode } });
+            if (searchGamesDto.barcode)
+                whereConditions.push({ barcodes: { has: searchGamesDto.barcode } });
 
             const games = await this.prismaService.game.findMany({
                 where: whereConditions.length ? { OR: whereConditions } : {}

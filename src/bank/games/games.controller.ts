@@ -14,9 +14,9 @@ export class GamesController {
 
     @Get()
     async searchGames(
-        @Body() searchGameDto: SearchGamesRequest
+        @Body() searchGamesDto: SearchGamesRequest
     ): Promise<Game[]> {
-        return this.gamesBankService.searchGames(searchGameDto);
+        return this.gamesBankService.searchGames(searchGamesDto);
     }
 
     @Get('barcode/:barcode')
