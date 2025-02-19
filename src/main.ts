@@ -1,8 +1,9 @@
 import { NestFactory, Reflector } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { JwtAccessAuthGuard } from './auth/guards/jwt-access-auth.guard';
+import { AppModule } from './app.module';
 import { RolesGuard } from './common/guards/roles.guard';
+import { JwtAccessAuthGuard } from './auth/guards/jwt-access-auth.guard';
+import { SwaggerService } from './config/swagger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +14,11 @@ async function bootstrap() {
     new JwtAccessAuthGuard(app.get(Reflector)),
     new RolesGuard(app.get(Reflector)),
   );
+
+  app.enableCors();
+
+  const swaggerService = app.get(SwaggerService);
+  swaggerService.setup(app);
 
   await app.listen(3000);
 }

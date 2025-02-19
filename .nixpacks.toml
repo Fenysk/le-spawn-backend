@@ -1,0 +1,23 @@
+[variables]
+NODE_VERSION = "20"
+
+[phases.install]
+cmds = [
+    "corepack enable",
+    "pnpm config set registry https://registry.npmmirror.com/",
+    "pnpm config set network-concurrency 1",
+    "pnpm config set fetch-retries 5",
+    "pnpm install --frozen-lockfile",
+]
+
+[phases.build]
+cmds = [
+    "pnpm prisma generate",
+    "pnpm prisma migrate deploy",
+    "pnpm run build",
+    "pnpm prune --production",
+    "rm -rf node_modules/.cache .npmrc",
+]
+
+[start]
+cmd = "pnpm run start:prod"

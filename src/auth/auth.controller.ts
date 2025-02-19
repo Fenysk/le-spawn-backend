@@ -72,7 +72,7 @@ export class AuthController {
     }
 
     @Public()
-    @Get('google/login-from-app')
+    @Post('google/login-from-app')
     async googleLoginFromApp(
         @Body() body: GoogleLoginFromAppRequest,
         @Res({ passthrough: true }) response: Response
