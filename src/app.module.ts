@@ -15,8 +15,8 @@ import { BarcodeProviderModule } from './barcode-provider/barcode-provider.modul
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    AuthModule,
     PrismaModule,
+    AuthModule,
     IgdbModule,
     BankModule,
     CommonModule,

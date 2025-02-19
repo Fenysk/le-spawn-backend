@@ -61,8 +61,8 @@ export class AuthService {
         }
     }
 
-    async verifyUserGoogle({ googleProfile }: { googleProfile: Profile }) {
-        const { emails } = googleProfile;
+    async verifyUserGoogle({ googleProfile }: { googleProfile: Profile }): Promise<User> {
+        const { emails, displayName } = googleProfile;
 
         const email = emails[0].value;
 
@@ -71,7 +71,7 @@ export class AuthService {
         try {
             user = await this.usersService.findUser({ email });
         } catch (error) {
-            user = await this.usersService.createUser({ email, pseudo: email });
+            user = await this.usersService.createUser({ email, pseudo: displayName });
         }
 
         return user;

@@ -8,6 +8,8 @@ import { Response } from 'express';
 import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { Public } from 'src/common/decorator/public.decorator';
+import { Profile } from 'passport-google-oauth20';
+import { GoogleLoginFromAppRequest } from './dto/google-login-from-app.request';
 
 @Controller('auth')
 export class AuthController {
@@ -67,6 +69,29 @@ export class AuthController {
         @Res({ passthrough: true }) response: Response
     ) {
         await this.authService.login({ user, response });
+    }
+
+    @Public()
+    @Get('google/login-from-app')
+    async googleLoginFromApp(
+        @Body() body: GoogleLoginFromAppRequest,
+        @Res({ passthrough: true }) response: Response
+    ) {
+        const googleProfile: Profile = {
+            id: body.id,
+            displayName: body.displayName,
+            emails: [{ value: body.email, verified: true }],
+            photos: [{ value: body.photoUrl }],
+            profileUrl: body.photoUrl,
+            provider: 'google',
+            username: body.displayName,
+            _raw: '',
+            _json: {
+                iss: '', azp: '', aud: '', sub: '', at_hash: '', iat: 0, exp: 0, email: '', email_verified: false, given_name: '', family_name: '', name: '', hd: '', locale: '', nonce: '', picture: '', profile: ''
+            },
+        };
+        const user = await this.authService.verifyUserGoogle({ googleProfile });
+        return await this.authService.login({ user, response: response });
     }
 
 }
