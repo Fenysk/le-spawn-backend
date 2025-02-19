@@ -1,0 +1,23 @@
+[variables]
+NODE_VERSION = "20"
+NODE_OPTIONS = "--dns-result-order=ipv4first"
+
+[phases.setup]
+cmds = ["corepack enable"]
+
+[phases.install]
+dependsOn = ["setup"]
+cmds = ["pnpm install --frozen-lockfile"]
+
+[phases.build]
+dependsOn = ["install"]
+cmds = [
+    "pnpm prisma migrate deploy || exit 1",
+    "pnpm prisma generate || exit 1",
+    "pnpm run build",
+    "pnpm prune --production",
+    "rm -rf node_modules/.cache .npmrc",
+]
+
+[start]
+cmd = "pnpm run start:prod"

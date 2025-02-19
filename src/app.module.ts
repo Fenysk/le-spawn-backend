@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { IgdbModule } from './igdb/igdb.module';
 import { ConfigModule } from '@nestjs/config';
@@ -11,6 +10,7 @@ import { CollectionsModule } from './collections/collections.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { BarcodeProviderModule } from './barcode-provider/barcode-provider.module';
+import { SwaggerModule } from './config/swagger.module';
 
 @Module({
   imports: [
@@ -24,9 +24,7 @@ import { BarcodeProviderModule } from './barcode-provider/barcode-provider.modul
     CollectionsModule,
     UsersModule,
     BarcodeProviderModule,
-  ],
-  controllers: [
-    AppController
+    SwaggerModule,
   ],
   providers: [
     AppService,

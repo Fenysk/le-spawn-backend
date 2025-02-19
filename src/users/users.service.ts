@@ -39,7 +39,6 @@ export class UsersService {
         id?: string;
         email?: string;
     }): Promise<User & { profile: Profile }> {
-        console.log(`Searching for user with id: ${id}, email: ${email}`);
         const user = await this.prismaService.user.findUnique({
             where: {
                 id,
@@ -51,11 +50,9 @@ export class UsersService {
         });
 
         if (!user) {
-            console.log('User not found');
             throw new NotFoundException('User not found');
         }
 
-        console.log(`User found: ${JSON.stringify(user)}`);
         return user;
     }
 
@@ -157,5 +154,4 @@ export class UsersService {
 
         return 'Profile deleted';
     }
-
 }
