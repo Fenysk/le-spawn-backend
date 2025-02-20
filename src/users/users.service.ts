@@ -68,6 +68,7 @@ export class UsersService {
                         create: {
                             pseudo: createUserRequest.pseudo,
                             displayName: createUserRequest.pseudo,
+                            avatarUrl: createUserRequest.avatarUrl,
                         }
                     },
                     collections: {

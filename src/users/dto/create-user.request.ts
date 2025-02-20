@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString, IsUrl } from "class-validator";
 
 export class CreateUserRequest {
     @IsString()
@@ -12,4 +12,9 @@ export class CreateUserRequest {
     @IsString()
     @IsOptional()
     hashedPassword?: string;
+
+    @IsString()
+    @IsOptional()
+    @IsUrl()
+    avatarUrl?: string;
 }

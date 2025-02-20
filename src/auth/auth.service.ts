@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './interfaces/token-payload.interface';
 import { Response } from 'express';
 import { Profile } from 'passport-google-oauth20';
+import { GoogleLoginFromAppRequest } from './dto/google-login-from-app.request';
 
 @Injectable()
 export class AuthService {
@@ -189,6 +190,22 @@ export class AuthService {
         );
 
         return `User ${user.id} has been successfully logged out`;
+    }
+
+    async googleLoginFromApp(
+        googleLoginFromAppRequest: GoogleLoginFromAppRequest
+    ): Promise<User> {
+        const { id, email, displayName: pseudo, photoUrl: avatarUrl } = googleLoginFromAppRequest;
+
+        let user: User;
+
+        try {
+            user = await this.usersService.findUser({ email });
+        } catch (error) {
+            user = await this.usersService.createUser({ email, pseudo, avatarUrl });
+        }
+
+        return user;
     }
 
 }
