@@ -77,8 +77,8 @@ export class AuthController {
         @Body() googleLoginFromAppRequest: GoogleLoginFromAppRequest,
         @Res({ passthrough: true }) response: Response
     ) {
-        const user = await this.authService.googleLoginFromApp(googleLoginFromAppRequest);
-        return await this.authService.login({ user, response });
+        const { user, isFirstTime } = await this.authService.googleLoginFromApp(googleLoginFromAppRequest);
+        return await this.authService.login({ user, response, isFirstTime: true });
     }
 
 }
