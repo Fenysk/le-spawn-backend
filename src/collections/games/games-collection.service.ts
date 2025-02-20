@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AddGameItemToCollectionRequest } from '../dto/add-game-item-to-collection.request';
 import { GamesBankService } from 'src/bank/games/games-bank.service';
@@ -77,5 +77,34 @@ export class GamesCollectionService {
             throw error;
         }
     }
+
+    async deleteGameItemFromCollection(
+        userId: string,
+        gameItemId: string
+    ): Promise<string> {
+        try {
+            const gameCollectionItem = await this.prismaService.gameCollectionItem.findUnique({
+                where: { id: gameItemId },
+                include: { collection: true }
+            });
+
+            if (!gameCollectionItem) {
+                throw new NotFoundException('Game item not found');
+            }
+
+            if (gameCollectionItem.collection.userId !== userId) {
+                throw new UnauthorizedException('Unauthorized');
+            }
+
+            await this.prismaService.gameCollectionItem.delete({
+                where: { id: gameItemId }
+            });
+
+            return `Game item with ID ${gameItemId} deleted`;
+        } catch (error) {
+            throw error;
+        }
+    }
+
 
 }
