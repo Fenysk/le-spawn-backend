@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { BarcodeProviderModule } from './barcode-provider/barcode-provider.module';
 import { ReportsModule } from './reports/reports.module';
 import { AnalyzeModule } from './analyze/analyze.module';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AnalyzeModule } from './analyze/analyze.module';
     BarcodeProviderModule,
     ReportsModule,
     AnalyzeModule,
+    StorageModule,
   ],
   providers: [
     AppService,
