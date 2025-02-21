@@ -70,7 +70,12 @@ export class GamesBankService {
         const category = getGameCategoryEnum(gameData.category);
         const coverFullUrl = this.igdbService.getGameCoverFullUrl(gameData.coverUrl);
 
-        const isIgdbBanned = gameData.category === GameCategoryEnumInt.mod || gameData.category === GameCategoryEnumInt.fork || gameData.category === GameCategoryEnumInt.update;
+        const isIgdbBanned = [
+            GameCategoryEnumInt.mod,
+            GameCategoryEnumInt.fork,
+            GameCategoryEnumInt.update,
+            GameCategoryEnumInt.dlcAddon,
+        ].includes(gameData.category);
 
         try {
             const existingGame = await this.prismaService.game.findUnique({
