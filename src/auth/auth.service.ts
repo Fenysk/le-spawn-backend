@@ -1,14 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '@/users/users.service';
 import { RegisterRequest } from './dto/register.request';
-import { CreateUserRequest } from 'src/users/dto/create-user.request';
-import { SecurityService } from 'src/common/security/security.service';
+import { CreateUserRequest } from '@/users/dto/create-user.request';
+import { SecurityService } from '@/common/services/security.service';
 import { User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './interfaces/token-payload.interface';
 import { Response } from 'express';
 import { Profile } from 'passport-google-oauth20';
+import { GoogleLoginFromAppRequest } from './dto/google-login-from-app.request';
 
 @Injectable()
 export class AuthService {
@@ -92,15 +93,17 @@ export class AuthService {
 
         const user = await this.usersService.createUser(createUserRequest);
 
-        await this.login({ user, response });
+        await this.login({ user, response, isFirstTime: true });
     }
 
     async login({
         user,
-        response
+        response,
+        isFirstTime = false,
     }: {
         user: User,
-        response: Response
+        response: Response,
+        isFirstTime?: boolean
     }) {
         // Token payload
         const tokenPayload: TokenPayload = { userId: user.id }
@@ -174,7 +177,8 @@ export class AuthService {
                 accessToken,
                 refreshToken
             },
-            user: userWithProfile
+            user: userWithProfile,
+            isFirstTime
         });
     }
 
@@ -189,6 +193,30 @@ export class AuthService {
         );
 
         return `User ${user.id} has been successfully logged out`;
+    }
+
+    async googleLoginFromApp(
+        googleLoginFromAppRequest: GoogleLoginFromAppRequest
+    ): Promise<{
+        user: User,
+        isFirstTime: boolean
+    }> {
+        const { id, email, displayName: pseudo, photoUrl: avatarUrl } = googleLoginFromAppRequest;
+
+        let user: User;
+        let isFirstTime: boolean = false;
+
+        try {
+            user = await this.usersService.findUser({ email });
+        } catch (error) {
+            user = await this.usersService.createUser({ email, pseudo, avatarUrl });
+            isFirstTime = true;
+        }
+
+        return {
+            user,
+            isFirstTime,
+        };
     }
 
 }

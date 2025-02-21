@@ -35,3 +35,14 @@ lerna-debug.log*
 !.vscode/extensions.json
 .env
 version.sh
+.cursorrules
+.cursor/*
+
+# Environment
+.env
+.env.test
+.env.production
+
+# Mais garder les exemples
+!.env.example
+!.env.test.example

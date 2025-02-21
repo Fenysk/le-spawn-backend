@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { NewPlatformRequest } from '../dto/new-platform.request';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '@/prisma/prisma.service';
+import { NewPlatformRequest } from '@/bank/dto/new-platform.request';
 import { Platform, Prisma } from '@prisma/client';
-import { SearchPlatformsRequest } from '../dto/search-platforms.request';
+import { SearchPlatformsRequest } from '@/bank/dto/search-platforms.request';
 
 @Injectable()
 export class PlatformsBankService {

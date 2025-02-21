@@ -1,7 +1,7 @@
 import { BadRequestException, HttpException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiService, MethodEnum } from '../../common/api.service';
-import { PricechartingApiResponse } from './interface/pricecharting-api.response';
+import { ApiService, HttpMethodEnum } from '@/common/services/api.service';
+import { PricechartingApiResponse } from '@/barcode-provider/pricecharting/interface/pricecharting-api.response';
 import axios from 'axios';
 
 @Injectable()
@@ -66,7 +66,7 @@ export class PricechartingService {
                 baseUrl: this.baseUrl,
                 endpoint: '/product',
                 params: { t: this.apiKey, upc: barcode },
-                method: MethodEnum.GET
+                method: HttpMethodEnum.GET
             });
 
             if (!response || response.error) {

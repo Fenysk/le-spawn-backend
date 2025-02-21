@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { BarcodeProviderModule } from './barcode-provider/barcode-provider.module';
 import { SwaggerModule } from './config/swagger.module';
+import { ReportsModule } from './game-reports/game-reports.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SwaggerModule } from './config/swagger.module';
     UsersModule,
     BarcodeProviderModule,
     SwaggerModule,
+    ReportsModule,
   ],
   providers: [
     AppService,

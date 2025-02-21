@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TwitchService } from './twitch.service';
-import { CommonModule } from 'src/common/common.module';
+import { CommonModule } from '@/common/common.module';
 import { TwitchController } from './twitch.controller';
 
 @Module({

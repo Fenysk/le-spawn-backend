@@ -1,9 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { AddGameItemToCollectionRequest } from '../dto/add-game-item-to-collection.request';
-import { GamesBankService } from 'src/bank/games/games-bank.service';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { PrismaService } from '@/prisma/prisma.service';
+import { AddGameItemToCollectionRequest } from '@/collections/dto/add-game-item-to-collection.request';
+import { GamesBankService } from '@/bank/games/games-bank.service';
 import { GameCollectionItem } from '@prisma/client';
-import { UpdateGameItemInCollectionRequest } from '../dto/update-game-item-in-collection.request';
+import { UpdateGameItemInCollectionRequest } from '@/collections/dto/update-game-item-in-collection.request';
 
 @Injectable()
 export class GamesCollectionService {
@@ -77,5 +77,34 @@ export class GamesCollectionService {
             throw error;
         }
     }
+
+    async deleteGameItemFromCollection(
+        userId: string,
+        gameItemId: string
+    ): Promise<string> {
+        try {
+            const gameCollectionItem = await this.prismaService.gameCollectionItem.findUnique({
+                where: { id: gameItemId },
+                include: { collection: true }
+            });
+
+            if (!gameCollectionItem) {
+                throw new NotFoundException('Game item not found');
+            }
+
+            if (gameCollectionItem.collection.userId !== userId) {
+                throw new UnauthorizedException('Unauthorized');
+            }
+
+            await this.prismaService.gameCollectionItem.delete({
+                where: { id: gameItemId }
+            });
+
+            return `Game item with ID ${gameItemId} deleted`;
+        } catch (error) {
+            throw error;
+        }
+    }
+
 
 }

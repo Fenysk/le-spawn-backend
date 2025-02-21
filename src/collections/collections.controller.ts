@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { CollectionsService } from './collections.service';
-import { CreateCollectionRequest } from './dto/create-collection.request';
-import { UpdateCollectionRequest } from './dto/update-collection.request';
+import { CollectionsService } from '@/collections/collections.service';
+import { CreateCollectionRequest } from '@/collections/dto/create-collection.request';
+import { UpdateCollectionRequest } from '@/collections/dto/update-collection.request';
 import { Collection, User } from '@prisma/client';
-import { GetUser } from 'src/common/decorator/get-user.decorator';
+import { GetUser } from '@/common/decorator/get-user.decorator';
 
 @Controller('collections')
 export class CollectionsController {

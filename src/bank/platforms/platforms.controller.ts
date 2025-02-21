@@ -1,7 +1,7 @@
 import { Body, Controller, Get } from '@nestjs/common';
 import { Platform } from '@prisma/client';
-import { SearchPlatformsRequest } from '../dto/search-platforms.request';
-import { PlatformsBankService } from '../platforms/platforms-bank.service';
+import { SearchPlatformsRequest } from '@/bank/dto/search-platforms.request';
+import { PlatformsBankService } from '@/bank/platforms/platforms-bank.service';
 
 @Controller('platforms')
 export class PlatformsController {

@@ -1,12 +1,12 @@
 import { ConflictException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Game, Prisma } from '@prisma/client';
-import { getGameCategoryEnum } from 'src/igdb/enum/game-category.enum';
-import { IgdbService } from 'src/igdb/igdb.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { BankService } from '../bank.service';
-import { AddBarcodeToGameRequest } from '../dto/add-barcode-to-game.request';
-import { NewGameRequest } from '../dto/new-game.request';
-import { SearchGamesRequest } from '../dto/search-games.request';
+import { GameCategoryEnumInt, getGameCategoryEnum } from '@/igdb/enum/game-category.enum';
+import { IgdbService } from '@/igdb/igdb.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { BankService } from '@/bank/bank.service';
+import { AddBarcodeToGameRequest } from '@/bank/dto/add-barcode-to-game.request';
+import { NewGameRequest } from '@/bank/dto/new-game.request';
+import { SearchGamesRequest } from '@/bank/dto/search-games.request';
 
 @Injectable()
 export class GamesBankService {
@@ -19,36 +19,37 @@ export class GamesBankService {
     ) { }
 
     async searchGamesInBank(searchGamesDto: SearchGamesRequest): Promise<Game[]> {
-        try {
-            const whereConditions: Prisma.GameWhereInput[] = [];
+        const whereConditions: Prisma.GameWhereInput[] = [];
 
-            if (searchGamesDto.id)
-                whereConditions.push({ id: searchGamesDto.id });
+        if (searchGamesDto.id)
+            whereConditions.push({ id: searchGamesDto.id });
 
-            if (searchGamesDto.query)
-                whereConditions.push({ name: { contains: searchGamesDto.query, mode: 'insensitive' } });
+        if (searchGamesDto.query)
+            whereConditions.push({ name: { contains: searchGamesDto.query, mode: 'insensitive' } });
 
-            if (searchGamesDto.barcode)
-                whereConditions.push({ barcodes: { has: searchGamesDto.barcode } });
+        if (searchGamesDto.barcode)
+            whereConditions.push({ barcodes: { has: searchGamesDto.barcode } });
 
-            const games = await this.prismaService.game.findMany({
-                where: whereConditions.length ? { OR: whereConditions } : {},
-                include: {
-                    platformsRelation: {
-                        include: {
-                            platform: true
-                        }
+        const games = await this.prismaService.game.findMany({
+            where: {
+                AND: [
+                    whereConditions.length ? { OR: whereConditions } : {},
+                    { isIgdbBanned: false }
+                ]
+            },
+            include: {
+                platformsRelation: {
+                    include: {
+                        platform: true
                     }
                 }
-            });
+            }
+        });
 
-            if (!games.length)
-                throw new NotFoundException('No games found matching the search criteria');
+        if (!games.length)
+            throw new NotFoundException('No games found matching the search criteria');
 
-            return games;
-        } catch (error) {
-            throw error;
-        }
+        return games;
     }
 
     async searchGamesInProviders(searchGamesDto: SearchGamesRequest) {
@@ -69,6 +70,8 @@ export class GamesBankService {
         const category = getGameCategoryEnum(gameData.category);
         const coverFullUrl = this.igdbService.getGameCoverFullUrl(gameData.coverUrl);
 
+        const isIgdbBanned = gameData.category === GameCategoryEnumInt.mod || gameData.category === GameCategoryEnumInt.fork || gameData.category === GameCategoryEnumInt.update;
+
         try {
             const existingGame = await this.prismaService.game.findUnique({
                 where: {
@@ -86,6 +89,7 @@ export class GamesBankService {
                     category: category,
                     coverUrl: coverFullUrl,
                     firstReleaseDate: gameData.firstReleaseDate,
+                    isIgdbBanned: isIgdbBanned,
                     franchises: gameData.franchises,
                     genres: gameData.genres,
                     name: gameData.name,
