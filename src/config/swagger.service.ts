@@ -2,6 +2,7 @@ import { Injectable, INestApplication } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { SwaggerAuthMiddleware } from './swagger.middleware';
+import { Request, Response, NextFunction } from 'express';
 
 @Injectable()
 export class SwaggerService {
@@ -15,7 +16,12 @@ export class SwaggerService {
     
     if (this.configService.get('NODE_ENV') !== 'development') {
       const middleware = new SwaggerAuthMiddleware(this.configService);
-      app.use(docPath, middleware.use.bind(middleware));
+      app.use((req: Request, res: Response, next: NextFunction) => {
+        if (req.path.startsWith(docPath)) {
+          return middleware.use(req, res, next);
+        }
+        next();
+      });
     }
 
     const config = new DocumentBuilder()
