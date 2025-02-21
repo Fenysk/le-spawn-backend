@@ -1,6 +1,6 @@
 import { Controller, Post, Get, Body, Param, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { GameReportsService } from './game-reports.service';
+import { GameReportsService } from './reports.service';
 import { CreateGameReportDto } from './dto/create-game-report.dto';
 import { GameReport, Role } from '@prisma/client';
 import { Roles } from '@/common/decorator/roles.decorator';

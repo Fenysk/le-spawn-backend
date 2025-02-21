@@ -10,8 +10,7 @@ import { CollectionsModule } from './collections/collections.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { BarcodeProviderModule } from './barcode-provider/barcode-provider.module';
-import { SwaggerModule } from './config/swagger.module';
-import { ReportsModule } from './game-reports/game-reports.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -25,7 +24,6 @@ import { ReportsModule } from './game-reports/game-reports.module';
     CollectionsModule,
     UsersModule,
     BarcodeProviderModule,
-    SwaggerModule,
     ReportsModule,
   ],
   providers: [

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ReportsController } from './game-reports.controller';
-import { GameReportsService } from './game-reports.service';
+import { ReportsController } from './reports.controller';
+import { GameReportsService } from './reports.service';
 import { PrismaModule } from '@/prisma/prisma.module';
 
 @Module({
