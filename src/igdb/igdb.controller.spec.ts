@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IgdbController } from './igdb.controller';
 import { IgdbService } from './igdb.service';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
 
 describe('IgdbController', () => {
   let controller: IgdbController;
@@ -42,7 +42,15 @@ describe('IgdbController', () => {
 
     it('should throw BadRequestException when id is not a number', async () => {
       const invalidId = 'abc';
-      await expect(controller.getGameById(invalidId as unknown as number)).rejects.toThrow();
+      await expect(controller.getGameById(invalidId as unknown as number))
+        .rejects
+        .toThrow(BadRequestException);
+    });
+
+    it('should throw BadRequestException when id is not an integer', async () => {
+      await expect(controller.getGameById(1.5))
+        .rejects
+        .toThrow(BadRequestException);
     });
 
     it('should throw NotFoundException when game is not found', async () => {
@@ -66,7 +74,15 @@ describe('IgdbController', () => {
     });
 
     it('should throw BadRequestException when name is empty', async () => {
-      await expect(controller.getGameByName('')).rejects.toThrow();
+      await expect(controller.getGameByName(''))
+        .rejects
+        .toThrow(BadRequestException);
+    });
+
+    it('should throw BadRequestException when name contains only spaces', async () => {
+      await expect(controller.getGameByName('   '))
+        .rejects
+        .toThrow(BadRequestException);
     });
 
     it('should throw NotFoundException when no games are found', async () => {
@@ -88,7 +104,15 @@ describe('IgdbController', () => {
 
     it('should throw BadRequestException when id is not a number', async () => {
       const invalidId = 'abc';
-      await expect(controller.getPlatformById(invalidId as unknown as number)).rejects.toThrow();
+      await expect(controller.getPlatformById(invalidId as unknown as number))
+        .rejects
+        .toThrow(BadRequestException);
+    });
+
+    it('should throw BadRequestException when id is not an integer', async () => {
+      await expect(controller.getPlatformById(1.5))
+        .rejects
+        .toThrow(BadRequestException);
     });
 
     it('should throw NotFoundException when platform is not found', async () => {

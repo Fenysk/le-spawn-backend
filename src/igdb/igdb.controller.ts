@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, BadRequestException } from '@nestjs/common';
 import { IgdbService } from './igdb.service';
 
 @Controller('igdb')
@@ -7,22 +7,31 @@ export class IgdbController {
 
   @Get('game/id/:id')
   async getGameById(
-    @Param('id', ParseIntPipe) id: number
-  ) {
-    return await this.igdbService.getGameById(id);
+    @Param('id') id: number
+  ): Promise<any> {
+    if (isNaN(id) || !Number.isInteger(Number(id))) 
+      throw new BadRequestException('Invalid game ID');
+
+    return this.igdbService.getGameById(id);
   }
 
   @Get('game/name/:name')
   async getGameByName(
     @Param('name') name: string
-  ) {
-    return await this.igdbService.getGamesFromName(name);
+  ): Promise<any> {
+    if (!name || name.trim().length === 0)
+      throw new BadRequestException('Game name cannot be empty');
+
+    return this.igdbService.getGamesFromName(name);
   }
 
   @Get('platform/:id')
   async getPlatformById(
-    @Param('id', ParseIntPipe) id: number
-  ) {
-    return await this.igdbService.getPlatformById(id);
+    @Param('id') id: number
+  ): Promise<any> {
+    if (isNaN(id) || !Number.isInteger(Number(id)))
+      throw new BadRequestException('Invalid platform ID');
+    
+    return this.igdbService.getPlatformById(id);
   }
 }
