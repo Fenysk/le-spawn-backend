@@ -11,9 +11,11 @@ export class SwaggerService {
   constructor(private readonly configService: ConfigService) { }
 
   setup(app: INestApplication) {
+    const docPath = '/doc';
+    
     if (this.configService.get('NODE_ENV') !== 'development') {
       const middleware = new SwaggerAuthMiddleware(this.configService);
-      app.use(middleware.use.bind(middleware));
+      app.use(docPath, middleware.use.bind(middleware));
     }
 
     const config = new DocumentBuilder()
