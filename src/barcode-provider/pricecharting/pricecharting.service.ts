@@ -1,7 +1,7 @@
 import { BadRequestException, HttpException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiService, HttpMethodEnum } from '../../common/services/api.service';
-import { PricechartingApiResponse } from './interface/pricecharting-api.response';
+import { ApiService, HttpMethodEnum } from '@/common/services/api.service';
+import { PricechartingApiResponse } from '@/barcode-provider/pricecharting/interface/pricecharting-api.response';
 import axios from 'axios';
 
 @Injectable()

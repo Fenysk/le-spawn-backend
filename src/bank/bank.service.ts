@@ -1,22 +1,21 @@
 import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { ScandexService } from '../barcode-provider/scandex/scandex.service';
-import { IgdbService } from '../igdb/igdb.service';
-import { GamesBankService } from './games/games-bank.service';
-import { NewGameRequest } from './dto/new-game.request';
+import { ScandexService } from '@/barcode-provider/scandex/scandex.service';
+import { IgdbService } from '@/igdb/igdb.service';
+import { GamesBankService } from '@/bank/games/games-bank.service';
+import { NewGameRequest } from '@/bank/dto/new-game.request';
 import { Game } from '@prisma/client';
-import { PlatformsBankService } from './platforms/platforms-bank.service';
-import { NewPlatformRequest } from './dto/new-platform.request';
-import { IGDBGameResponse } from 'src/igdb/interface/igdb-game.response';
-import { UpcitemdbService } from 'src/barcode-provider/upcitemdb/upcitemdb.service';
-import { PricechartingService } from 'src/barcode-provider/pricecharting/pricecharting.service';
-import { BarcodespiderService } from 'src/barcode-provider/barcodespider/barcodespider.service';
+import { PlatformsBankService } from '@/bank/platforms/platforms-bank.service';
+import { NewPlatformRequest } from '@/bank/dto/new-platform.request';
+import { IGDBGameResponse } from '@/igdb/interface/igdb-game.response';
+import { UpcitemdbService } from '@/barcode-provider/upcitemdb/upcitemdb.service';
+import { PricechartingService } from '@/barcode-provider/pricecharting/pricecharting.service';
+import { BarcodespiderService } from '@/barcode-provider/barcodespider/barcodespider.service';
 
 @Injectable()
 export class BankService {
     constructor(
         @Inject(forwardRef(() => GamesBankService))
-        private readonly gamesBankService: GamesBankService,
-        
+        private readonly gamesBankService: GamesBankService,        
         private readonly scandexService: ScandexService,
         private readonly igdbService: IgdbService,
         private readonly platformsBankService: PlatformsBankService,
@@ -29,7 +28,7 @@ export class BankService {
         return new Date(timestamp * 1000);
     }
 
-    private async checkOtherPossibilities(productName: string) {
+    private async checkOtherPossibilities(productName: string): Promise<IGDBGameResponse[]> {
         const wordsInProductName = productName.split(' ');
         const totalWords = wordsInProductName.length;
 

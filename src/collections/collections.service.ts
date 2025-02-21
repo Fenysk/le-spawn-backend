@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { Collection } from '@prisma/client';
-import { CreateCollectionRequest } from './dto/create-collection.request';
-import { UpdateCollectionRequest } from './dto/update-collection.request';
+import { CreateCollectionRequest } from '@/collections/dto/create-collection.request';
+import { UpdateCollectionRequest } from '@/collections/dto/update-collection.request';
 
 @Injectable()
 export class CollectionsService {

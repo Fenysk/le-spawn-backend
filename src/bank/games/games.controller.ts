@@ -1,18 +1,18 @@
 import { Body, Controller, Get, Param, Put } from '@nestjs/common';
-import { GamesBankService } from './games-bank.service';
-import { SearchGamesRequest } from '../dto/search-games.request';
+import { GamesBankService } from '@/bank/games/games-bank.service';
+import { SearchGamesRequest } from '@/bank/dto/search-games.request';
 import { Game } from '@prisma/client';
-import { BankService } from '../bank.service';
-import { AddBarcodeToGameRequest } from '../dto/add-barcode-to-game.request';
+import { BankService } from '@/bank/bank.service';
+import { AddBarcodeToGameRequest } from '@/bank/dto/add-barcode-to-game.request';
 
-@Controller('games')
+@Controller('bank/games')
 export class GamesController {
     constructor(
         private readonly gamesBankService: GamesBankService,
         private readonly bankService: BankService
     ) { }
 
-    @Get('bank')
+    @Get('search')
     async searchGamesInBank(
         @Body() searchGamesDto: SearchGamesRequest
     ): Promise<Game[]> {

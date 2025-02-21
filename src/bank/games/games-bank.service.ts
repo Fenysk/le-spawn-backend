@@ -1,12 +1,12 @@
 import { ConflictException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Game, Prisma } from '@prisma/client';
-import { getGameCategoryEnum } from 'src/igdb/enum/game-category.enum';
-import { IgdbService } from 'src/igdb/igdb.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { BankService } from '../bank.service';
-import { AddBarcodeToGameRequest } from '../dto/add-barcode-to-game.request';
-import { NewGameRequest } from '../dto/new-game.request';
-import { SearchGamesRequest } from '../dto/search-games.request';
+import { getGameCategoryEnum } from '@/igdb/enum/game-category.enum';
+import { IgdbService } from '@/igdb/igdb.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { BankService } from '@/bank/bank.service';
+import { AddBarcodeToGameRequest } from '@/bank/dto/add-barcode-to-game.request';
+import { NewGameRequest } from '@/bank/dto/new-game.request';
+import { SearchGamesRequest } from '@/bank/dto/search-games.request';
 
 @Injectable()
 export class GamesBankService {

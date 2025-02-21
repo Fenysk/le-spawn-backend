@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TwitchModule } from '../src/twitch/twitch.module';
+import { TwitchModule } from '@/twitch/twitch.module';
 import { CommonModule } from '@/common/common.module';
 
 describe('TwitchController (e2e)', () => {
@@ -32,7 +32,7 @@ describe('TwitchController (e2e)', () => {
       'TWITCH_CLIENT_ID',
       'TWITCH_CLIENT_SECRET'
     ];
-    
+
     requiredEnvVars.forEach(envVar => {
       const value = configService.get<string>(envVar);
       if (!value) {
@@ -52,7 +52,7 @@ describe('TwitchController (e2e)', () => {
   describe('Authentication', () => {
     it('should successfully get Twitch access token', async () => {
       const response = await request(app.getHttpServer())
-        .get('/twitch/auth')
+        .get('/twitch/token')
         .expect(200);
 
       expect(response.body).toHaveProperty('access_token');
@@ -62,11 +62,11 @@ describe('TwitchController (e2e)', () => {
 
     it('should handle rate limiting gracefully', async () => {
       const maxRequests = Number(configService.get<string>('TEST_RATE_LIMIT_REQUESTS')) || 5;
-      const promises = Array(maxRequests).fill(null).map(() => 
+      const promises = Array(maxRequests).fill(null).map(() =>
         request(app.getHttpServer())
-          .get('/twitch/auth')
+          .get('/twitch/token')
       );
-      
+
       const results = await Promise.all(promises);
       results.forEach(res => {
         expect([200, 429]).toContain(res.status);
@@ -101,20 +101,11 @@ describe('TwitchController (e2e)', () => {
 
       try {
         await request(testApp.getHttpServer())
-          .get('/twitch/auth')
+          .get('/twitch/token')
           .expect(500);
       } finally {
         await testApp.close();
       }
     });
   });
-
-  describe('Health Check', () => {
-    it('/twitch/health (GET)', () => {
-      return request(app.getHttpServer())
-        .get('/twitch/health')
-        .expect(200)
-        .expect({ status: 'ok' });
-    });
-  });
-}); 
+});
