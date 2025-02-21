@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { IgdbService } from './igdb.service';
 
 @Controller('igdb')
@@ -7,7 +7,7 @@ export class IgdbController {
 
   @Get('game/id/:id')
   async getGameById(
-    @Param('id') id: number
+    @Param('id', ParseIntPipe) id: number
   ) {
     return await this.igdbService.getGameById(id);
   }
@@ -21,7 +21,7 @@ export class IgdbController {
 
   @Get('platform/:id')
   async getPlatformById(
-    @Param('id') id: number
+    @Param('id', ParseIntPipe) id: number
   ) {
     return await this.igdbService.getPlatformById(id);
   }

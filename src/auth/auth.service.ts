@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { RegisterRequest } from './dto/register.request';
 import { CreateUserRequest } from 'src/users/dto/create-user.request';
-import { SecurityService } from 'src/common/security/security.service';
+import { SecurityService } from 'src/common/services/security.service';
 import { User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';

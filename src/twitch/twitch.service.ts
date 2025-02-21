@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MethodEnum, ApiService } from '../common/api.service';
+import { HttpMethodEnum } from '@/common/enums/http-method.enum';
+import { ApiService } from '@/common/services/api.service';
 import { TwitchAuthResponse } from './interface/twitch-auth.response';
 
 @Injectable()
@@ -21,7 +22,7 @@ export class TwitchService {
 
         const response = await this.apiService.requestToApi<TwitchAuthResponse>({
             baseUrl: this.oauthUrl,
-            method: MethodEnum.POST,
+            method: HttpMethodEnum.POST,
             params: {
                 client_id: clientId,
                 client_secret: clientSecret,

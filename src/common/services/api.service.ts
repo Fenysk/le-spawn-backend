@@ -1,34 +1,22 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-
-export enum MethodEnum {
-    GET = 'GET',
-    POST = 'POST',
-    PUT = 'PUT',
-    DELETE = 'DELETE',
-}
+import { HttpMethodEnum } from '../enums/http-method.enum';
 
 @Injectable()
 export class ApiService {
-
-    constructor(
-        private readonly configService: ConfigService,
-    ) { }
-
     async requestToApi<T>({
         baseUrl,
         endpoint,
         headers = {},
         params = {},
         body,
-        method = MethodEnum.GET
+        method = HttpMethodEnum.GET
     }: {
         baseUrl: string;
         endpoint?: string;
         headers?: Record<string, any>;
         params?: Record<string, any>;
         body?: string;
-        method?: MethodEnum;
+        method?: HttpMethodEnum;
     }): Promise<T> {
         const url = new URL(endpoint ? `${baseUrl}${endpoint}` : baseUrl);
 
@@ -59,3 +47,5 @@ export class ApiService {
     }
 
 }
+
+export { HttpMethodEnum };
