@@ -81,8 +81,8 @@ export class BankService {
         }
     }
 
-    async addNewGameFromIgdbGames(igdbGames: IGDBGameResponse[], barcode?: string) {
-        return await Promise.all(igdbGames.map(async (igdbGame) => {
+    async addNewGameFromIgdbGames(igdbGames: IGDBGameResponse[], barcode?: string): Promise<Game[]> {
+        const games = await Promise.all(igdbGames.map(async (igdbGame) => {
             const platforms = await Promise.all((igdbGame.platforms || []).map(async (platformFromIgdb) => {
                 try {
                     return await this.platformsBankService.getPlatformWithIgdbId(+platformFromIgdb.id);
@@ -121,6 +121,10 @@ export class BankService {
 
             return await this.gamesBankService.addGameToBank(newGameRequest);
         }));
+
+        const isGameNotBanned = (game: Game): boolean => !game.isIgdbBanned;
+
+        return games.filter(isGameNotBanned);
     }
 
     private async fetchFromBarcodespider(barcode: string): Promise<IGDBGameResponse[]> {

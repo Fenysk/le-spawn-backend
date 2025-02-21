@@ -39,6 +39,8 @@ model Game {
   id         String @id @unique @default(uuid())
   igdbGameId Int?   @unique
 
+  isIgdbBanned Boolean @default(false)
+
   barcodes String[]
 
   category GameCategoryEnum
