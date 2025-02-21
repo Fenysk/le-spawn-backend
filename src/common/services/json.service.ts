@@ -4,7 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 export class JsonService {
   private readonly logger = new Logger(JsonService.name);
 
-  extractJson(text: string): unknown {
+  extractJson(text: string): string {
     try {
       const startIndex = text.indexOf('{') !== -1 ? text.indexOf('{') : text.indexOf('[');
       if (startIndex === -1) return null;
@@ -15,7 +15,8 @@ export class JsonService {
       const potentialJson = text.substring(startIndex, endIndex);
 
       const parsedJson = JSON.parse(potentialJson);
-      return parsedJson;
+      
+      return JSON.stringify(parsedJson);
     } catch (error) {
       this.logger.debug(`Failed to extract JSON from text: ${error.message}`);
       return null;

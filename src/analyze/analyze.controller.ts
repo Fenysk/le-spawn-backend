@@ -1,19 +1,25 @@
-import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AnalyzeService } from './services/analyze.service';
-import { AnalyzeResponse } from './dto/analyze-response';
-import { Express } from 'express';
+import { ImagesAnalyzeResponse as ImagesAnalyzeResponse } from './dto/analyze.response';
+import { ImagesAnalyzeRequestDto as ImagesAnalyzeRequest } from './dto/analyze.request';
 
 @Controller('analyze')
 export class AnalyzeController {
-  constructor(private readonly analyzeService: AnalyzeService) {}
+    constructor(private readonly analyzeService: AnalyzeService) { }
 
-  @Post('image')
-  @UseInterceptors(FileInterceptor('file'))
-  async analyzeImage(
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<AnalyzeResponse> {
-    return this.analyzeService.analyzeImage(file);
-  }
+    @Post('images')
+    async analyzeMultipleImages(
+        @Body() request: ImagesAnalyzeRequest,
+    ): Promise<ImagesAnalyzeResponse> {
+        return this.analyzeService.analyzeMultipleImages(request.images, request.prompt);
+    }
+
+    @Post('game')
+    async analyzeGame(
+        @Body('images') images: string[],
+    ): Promise<string> {
+        return this.analyzeService.analyzeGame(images);
+    }
 
 }
+

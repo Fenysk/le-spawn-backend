@@ -1,49 +1,65 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
-import { MistralVisionRequestDto } from '../dto/mistral/vision-request.dto';
-import { MistralVisionResponseDto } from '../dto/mistral/vision-response.dto';
 
 @Injectable()
 export class MistralService {
   private readonly logger = new Logger(MistralService.name);
   private readonly apiKey: string;
-  private readonly apiUrl = 'https://api.mistral.ai/v1/chat/completions';
+  private readonly apiUrl: string;
+  private readonly MODEL = 'pixtral-12b-2409';
 
   constructor(private readonly configService: ConfigService) {
     this.apiKey = this.configService.getOrThrow<string>('MISTRAL_API_KEY');
+    this.apiUrl = this.configService.getOrThrow<string>('MISTRAL_API_URL', 'https://api.mistral.ai/v1');
   }
 
-  async analyzeImage(request: MistralVisionRequestDto): Promise<MistralVisionResponseDto> {
+  private validateApiResponse(data: any): void {
+    if (!data || !data.choices || !Array.isArray(data.choices) || data.choices.length === 0)
+      throw new BadRequestException('Invalid response from Mistral API');
+    if (!data.choices[0].message || !data.choices[0].message.content)
+      throw new BadRequestException('Invalid message format from Mistral API');
+  }
+
+  async analyzeImages(imageUrls: string[], prompt: string): Promise<string> {
     try {
-      const response = await axios.post(
-        this.apiUrl,
-        {
-          model: 'pixtral-12b-2409',
+      const imageContents = imageUrls.map((url) => ({
+        type: 'image_url',
+        image_url: { url }
+      }));
+
+      const response = await fetch(`${this.apiUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: this.MODEL,
           messages: [
             {
               role: 'user',
               content: [
-                { type: 'text', text: request.prompt },
-                { type: 'image_url', image_url: `data:image/jpeg;base64,${request.imageBase64}` }
-              ]
-            }
-          ]
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+                { type: 'text', text: prompt },
+                ...imageContents,
+              ],
+            },
+          ],
+        }),
+      });
 
-      return {
-        content: response.data.choices[0].message.content
-      };
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        this.logger.error('Mistral API error', errorData);
+        throw new BadRequestException('Error from Mistral API: ' + response.statusText);
+      }
+
+      const data = await response.json();
+      this.validateApiResponse(data);
+      return data.choices[0].message.content;
     } catch (error) {
-      this.logger.error('Error calling Mistral Vision API', error);
-      throw error;
+      this.logger.error('Error analyzing images', error);
+      if (error instanceof BadRequestException) throw error;
+      throw new BadRequestException('Failed to analyze images');
     }
   }
-} 
+}

@@ -1,43 +1,49 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MistralService } from './mistral.service';
-import { AnalyzeResponse } from '../dto/analyze-response';
+import { ImagesAnalyzeResponse } from '../dto/analyze.response';
+import { ImagesAnalyzeRequestDto } from '../dto/analyze.request';
 import { JsonService } from '@/common/services/json.service';
+import { PROMPTS } from '../constants/prompts.constant';
 
 @Injectable()
 export class AnalyzeService {
   private readonly logger = new Logger(AnalyzeService.name);
-  private readonly allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-  private readonly maxFileSize = 10 * 1024 * 1024; // 10MB
 
   constructor(
     private readonly mistralService: MistralService,
-    private readonly jsonService: JsonService
-  ) {}
+    private readonly jsonService: JsonService,
+  ) { }
 
-  private validateFile(file: Express.Multer.File): void {
-    if (!file) throw new BadRequestException('No file uploaded');
-    if (!this.allowedMimeTypes.includes(file.mimetype))
-      throw new BadRequestException('Invalid file type. Only JPEG, PNG, WEBP and GIF are allowed');
-    if (file.size > this.maxFileSize)
-      throw new BadRequestException('File too large. Maximum size is 10MB');
-  }
-
-  async analyzeImage(file: Express.Multer.File): Promise<AnalyzeResponse> {
+  async analyzeMultipleImages(images: string[], prompt: string): Promise<ImagesAnalyzeResponse> {
     try {
-      this.validateFile(file);
-      
-      const response = await this.mistralService.analyzeImage({
-        prompt: 'Describe what you see in this image',
-        imageBase64: file.buffer.toString('base64'),
-      });
+      const analysis = await this.mistralService.analyzeImages(images, prompt);
 
       return {
-        analysis: response.content
+        analysis,
+        images,
       };
     } catch (error) {
       if (error instanceof BadRequestException) throw error;
-      this.logger.error('Error analyzing image', error);
-      throw new BadRequestException('Error analyzing image');
+      this.logger.error('Error analyzing multiple images', error);
+      throw new BadRequestException('Error analyzing multiple images');
     }
   }
-} 
+
+  async analyzeGame(images: string[]): Promise<string> {
+    const maxRetries = 3;
+    let attempt = 0;
+    let parsedAnalysis: string | null = null;
+
+    while (attempt < maxRetries) {
+      const analysis = await this.mistralService.analyzeImages(images, PROMPTS.GAME);
+      parsedAnalysis = this.jsonService.extractJson(analysis);
+
+      if (this.jsonService.isValidJson(parsedAnalysis as string))
+        return parsedAnalysis;
+
+      attempt++;
+    }
+
+    throw new BadRequestException('Invalid JSON in analysis after multiple attempts');
+  }
+}
