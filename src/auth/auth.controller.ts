@@ -78,7 +78,7 @@ export class AuthController {
         @Res({ passthrough: true }) response: Response
     ) {
         const { user, isFirstTime } = await this.authService.googleLoginFromApp(googleLoginFromAppRequest);
-        return await this.authService.login({ user, response, isFirstTime: true });
+        return await this.authService.login({ user, response, isFirstTime });
     }
 
 }
