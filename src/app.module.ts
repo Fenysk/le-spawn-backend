@@ -13,6 +13,7 @@ import { BarcodeProviderModule } from './barcode-provider/barcode-provider.modul
 import { ReportsModule } from './reports/reports.module';
 import { AnalyzeModule } from './analyze/analyze.module';
 import { StorageModule } from './storage/storage.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -32,6 +33,9 @@ import { StorageModule } from './storage/storage.module';
   ],
   providers: [
     AppService,
+  ],
+  controllers: [
+    AppController,
   ],
 })
 export class AppModule { }
