@@ -71,7 +71,7 @@ model Platform {
   igdbPlatformId Int?   @unique
 
   name         String
-  abbreviation String
+  abbreviation String?
 
   generation Int?
 

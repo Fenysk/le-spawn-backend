@@ -15,7 +15,7 @@ import { BarcodespiderService } from '@/barcode-provider/barcodespider/barcodesp
 export class BankService {
     constructor(
         @Inject(forwardRef(() => GamesBankService))
-        private readonly gamesBankService: GamesBankService,        
+        private readonly gamesBankService: GamesBankService,
         private readonly scandexService: ScandexService,
         private readonly igdbService: IgdbService,
         private readonly platformsBankService: PlatformsBankService,
@@ -59,17 +59,10 @@ export class BankService {
         } catch (error) {
             let igdbGames: IGDBGameResponse[] = [];
 
-            if (!igdbGames.length)
-                igdbGames = await this.fetchFromPriceCharting(barcode);
-
-            if (!igdbGames.length)
-                igdbGames = await this.fetchFromUpcitemdb(barcode);
-
-            if (!igdbGames.length)
-                igdbGames = await this.fetchFromScandex(barcode);
-
-            if (!igdbGames.length)
-                igdbGames = await this.fetchFromBarcodespider(barcode);
+            igdbGames = igdbGames.length ? igdbGames : await this.fetchIgdbGamesFromPriceCharting(barcode);
+            igdbGames = igdbGames.length ? igdbGames : await this.fetchIgdbGamesFromScandex(barcode);
+            igdbGames = igdbGames.length ? igdbGames : await this.fetchIgdbGamesFromUpcitemdb(barcode);
+            igdbGames = igdbGames.length ? igdbGames : await this.fetchIgdbGamesFromBarcodespider(barcode);
 
             if (!igdbGames.length) {
                 throw new NotFoundException('Game not found');
@@ -127,7 +120,7 @@ export class BankService {
         return games.filter(isGameNotBanned);
     }
 
-    private async fetchFromBarcodespider(barcode: string): Promise<IGDBGameResponse[]> {
+    private async fetchIgdbGamesFromBarcodespider(barcode: string): Promise<IGDBGameResponse[]> {
         let igdbGames: IGDBGameResponse[] = [];
         try {
             const barcodespiderInfo = await this.barcodespiderService.lookup({ barcode });
@@ -152,7 +145,7 @@ export class BankService {
         return igdbGames;
     }
 
-    private async fetchFromScandex(barcode: string): Promise<IGDBGameResponse[]> {
+    private async fetchIgdbGamesFromScandex(barcode: string): Promise<IGDBGameResponse[]> {
         let igdbGames: IGDBGameResponse[] = [];
         try {
             const scanDexGameInfo = await this.scandexService.lookup({ barcode: barcode });
@@ -163,7 +156,7 @@ export class BankService {
         return igdbGames;
     }
 
-    private async fetchFromUpcitemdb(barcode: string): Promise<IGDBGameResponse[]> {
+    private async fetchIgdbGamesFromUpcitemdb(barcode: string): Promise<IGDBGameResponse[]> {
         let igdbGames: IGDBGameResponse[] = [];
         try {
             const upcitemdbGameInfo = await this.upcitemdbService.lookup({ barcode: Number(barcode) });
@@ -190,7 +183,7 @@ export class BankService {
         return igdbGames;
     }
 
-    private async fetchFromPriceCharting(barcode: string): Promise<IGDBGameResponse[]> {
+    private async fetchIgdbGamesFromPriceCharting(barcode: string): Promise<IGDBGameResponse[]> {
         let igdbGames: IGDBGameResponse[] = [];
         try {
             const pricechartingGameInfo = await this.pricechartingService.lookup({ barcode });
@@ -214,5 +207,4 @@ export class BankService {
 
         return igdbGames;
     }
-
 }

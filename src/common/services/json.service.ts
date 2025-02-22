@@ -1,26 +1,26 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class JsonService {
-  private readonly logger = new Logger(JsonService.name);
 
-  extractJson(text: string): string {
-    try {
-      const startIndex = text.indexOf('{') !== -1 ? text.indexOf('{') : text.indexOf('[');
-      if (startIndex === -1) return null;
-
-      const endIndex = text.lastIndexOf('}') !== -1 ? text.lastIndexOf('}') + 1 : text.lastIndexOf(']') + 1;
-      if (endIndex === 0) return null;
-
-      const potentialJson = text.substring(startIndex, endIndex);
-
-      const parsedJson = JSON.parse(potentialJson);
-      
-      return JSON.stringify(parsedJson);
-    } catch (error) {
-      this.logger.debug(`Failed to extract JSON from text: ${error.message}`);
-      return null;
+  extractJson(text: string): any {
+    const startIndex = text.indexOf('{') !== -1 ? text.indexOf('{') : text.indexOf('[');
+    if (startIndex === -1) {
+      throw new Error('No JSON object or array found in the text.');
     }
+
+    const endIndex = text.lastIndexOf('}') !== -1 ? text.lastIndexOf('}') + 1 : text.lastIndexOf(']') + 1;
+    if (endIndex === 0) {
+      throw new Error('No JSON object or array found in the text.');
+    }
+
+    const potentialJson = text.substring(startIndex, endIndex);
+
+    if (!this.isValidJson(potentialJson)) {
+      throw new Error('Extracted text is not valid JSON.');
+    }
+
+    return JSON.parse(potentialJson);
   }
 
   isValidJson(text: string): boolean {

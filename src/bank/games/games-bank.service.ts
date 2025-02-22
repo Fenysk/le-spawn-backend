@@ -52,7 +52,7 @@ export class GamesBankService {
         return games;
     }
 
-    async searchGamesInProviders(searchGamesDto: SearchGamesRequest) {
+    async searchGamesInProviders(searchGamesDto: SearchGamesRequest): Promise<Game[]> {
         try {
             const igdbGames = await this.igdbService.getGamesFromName(searchGamesDto.query);
 
