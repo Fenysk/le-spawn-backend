@@ -1,4 +1,5 @@
 import {
+    Body,
     Controller,
     Delete,
     Get,
@@ -8,13 +9,13 @@ import {
     Res,
     UploadedFile,
     UseInterceptors,
-    BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { StorageService } from './storage.service';
 import { STORAGE_CONSTANTS } from './storage.constants';
 import { UploadResponseDto } from './dto/uploaded-file.response';
+import { DeleteFileUrlRequest } from './dto/delete-file-url.request';
 
 @Controller('storage')
 export class StorageController {
@@ -66,11 +67,10 @@ export class StorageController {
         return this.storageService.deleteFile(filename, bucket);
     }
 
-    @Delete('url/:filename')
+    @Delete('url')
     async deleteFileUrl(
-        @Param('filename') filename: string,
-        @Query('bucket') bucket: string = STORAGE_CONSTANTS.DEFAULT_BUCKET,
+        @Body() request: DeleteFileUrlRequest,
     ): Promise<string> {
-        return this.storageService.deleteFileFromUrl(filename, bucket);
+        return this.storageService.deleteFileFromUrl(request.url, request.bucket);
     }
 }
