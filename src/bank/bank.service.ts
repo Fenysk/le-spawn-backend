@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ScandexService } from '@/barcode-provider/scandex/scandex.service';
 import { IgdbService } from '@/igdb/igdb.service';
 import { GamesBankService } from '@/bank/games/games-bank.service';
@@ -10,9 +10,12 @@ import { IGDBGameResponse } from '@/igdb/interface/igdb-game.response';
 import { UpcitemdbService } from '@/barcode-provider/upcitemdb/upcitemdb.service';
 import { PricechartingService } from '@/barcode-provider/pricecharting/pricecharting.service';
 import { BarcodespiderService } from '@/barcode-provider/barcodespider/barcodespider.service';
-
+import { GetGamesFromImagesRequest } from './dto/get-games-from-images.request';
+import { AnalyzeService } from '@/analyze/analyze.service';
 @Injectable()
 export class BankService {
+    private readonly logger = new Logger(BankService.name);
+
     constructor(
         @Inject(forwardRef(() => GamesBankService))
         private readonly gamesBankService: GamesBankService,
@@ -22,6 +25,7 @@ export class BankService {
         private readonly upcitemdbService: UpcitemdbService,
         private readonly pricechartingService: PricechartingService,
         private readonly barcodespiderService: BarcodespiderService,
+        private readonly analyzeService: AnalyzeService,
     ) { }
 
     private fromUnixTimestamp(timestamp: number): Date {
@@ -71,6 +75,29 @@ export class BankService {
             const newGames = await this.addNewGameFromIgdbGames(igdbGames, barcode);
 
             return newGames;
+        }
+    }
+
+    async fetchGamesFromImages(request: GetGamesFromImagesRequest): Promise<Game[]> {
+        try {
+            const analysis = await this.analyzeService.analyzeGame(request.images);
+
+            try {
+                const games = await this.gamesBankService.searchGamesInProviders({ query: analysis.title });
+
+                return games;
+            } catch (error) {
+                if (error.status === 404 && analysis.simpleTitle) {
+                    const games = await this.gamesBankService.searchGamesInProviders({ query: analysis.simpleTitle });
+
+                    return games;
+                } else {
+                    throw error;
+                }
+            }
+        } catch (error) {
+            this.logger.error('Error fetching IGDB games from images', error);
+            throw new BadRequestException('Error fetching IGDB games from images');
         }
     }
 

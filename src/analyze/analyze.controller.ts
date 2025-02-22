@@ -2,7 +2,6 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { AnalyzeService } from './analyze.service';
 import { ImagesAnalyzeRequestDto as ImagesAnalyzeRequest } from './dto/images-analyze.request';
 import { GameAnalyzeResponse } from './dto/game-analyze.response';
-import { Game } from '@prisma/client';
 
 @Controller('analyze')
 export class AnalyzeController {
@@ -20,13 +19,6 @@ export class AnalyzeController {
         @Body('images') images: string[],
     ): Promise<GameAnalyzeResponse> {
         return this.analyzeService.analyzeGame(images);
-    }
-
-    @Post('games')
-    async fetchGamesFromImages(
-        @Body('images') images: string[],
-    ): Promise<Game[]> {
-        return this.analyzeService.fetchGamesFromImages(images);
     }
 
 }
