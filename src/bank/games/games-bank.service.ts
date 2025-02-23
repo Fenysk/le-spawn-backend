@@ -42,7 +42,12 @@ export class GamesBankService {
                     include: {
                         platform: true
                     }
-                }
+                },
+                gameLocalizations: {
+                    include: {
+                        region: true
+                    }
+                },
             }
         });
 
@@ -64,7 +69,7 @@ export class GamesBankService {
         }
     }
 
-    async addGameToBank(
+    async upsertGameToBank(
         gameData: NewGameRequest
     ): Promise<Game> {
         const category = getGameCategoryEnum(gameData.category);
@@ -81,6 +86,18 @@ export class GamesBankService {
             const existingGame = await this.prismaService.game.findUnique({
                 where: {
                     igdbGameId: gameData.igdbGameId
+                },
+                include: {
+                    gameLocalizations: {
+                        include: {
+                            region: true
+                        }
+                    },
+                    platformsRelation: {
+                        include: {
+                            platform: true
+                        }
+                    },
                 }
             });
 
@@ -93,6 +110,15 @@ export class GamesBankService {
                     barcodes: gameData.barcodes,
                     category: category,
                     coverUrl: coverFullUrl,
+                    gameLocalizations: {
+                        create: gameData.gameLocalizations.map(localization => ({
+                            region: {
+                                connect: { id: localization.regionId }
+                            },
+                            name: localization.name,
+                            coverUrl: localization.coverUrl
+                        }))
+                    },
                     firstReleaseDate: gameData.firstReleaseDate,
                     isIgdbBanned: isIgdbBanned,
                     franchises: gameData.franchises,
@@ -116,7 +142,12 @@ export class GamesBankService {
                         include: {
                             platform: true
                         }
-                    }
+                    },
+                    gameLocalizations: {
+                        include: {
+                            region: true
+                        }
+                    },
                 }
             });
 

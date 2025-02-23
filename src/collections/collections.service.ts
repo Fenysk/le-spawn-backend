@@ -22,7 +22,20 @@ export class CollectionsService {
                             createdAt: 'desc',
                         },
                         include: {
-                            game: true,
+                            game: {
+                                include: {
+                                    gameLocalizations: {
+                                        include: {
+                                            region: true
+                                        }
+                                    },
+                                    platformsRelation: {
+                                        include: {
+                                            platform: true
+                                        }
+                                    }
+                                }
+                            },
                         }
                     }
                 }
@@ -43,7 +56,20 @@ export class CollectionsService {
                 include: {
                     gameItems: {
                         include: {
-                            game: true
+                            game: {
+                                include: {
+                                    gameLocalizations: {
+                                        include: {
+                                            region: true
+                                        }
+                                    },
+                                    platformsRelation: {
+                                        include: {
+                                            platform: true
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

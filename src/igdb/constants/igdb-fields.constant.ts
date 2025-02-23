@@ -5,6 +5,7 @@ export const GAME_FIELDS = [
   'first_release_date',
   'franchise.*',
   'franchises.*',
+  'game_localizations.*',
   'genres.*',
   'keywords.*',
   'name',
@@ -19,4 +20,14 @@ export const GAME_FIELDS = [
   'videos.*',
 ] as const;
 
-export const PLATFORM_FIELDS = ['*'] as const; 
+export const PLATFORM_FIELDS = ['*'] as const;
+
+export const GAME_LOCALIZATION_FIELDS = [
+  'checksum',
+  'cover.*',
+  'created_at',
+  'game',
+  'name',
+  'region.*',
+  'updated_at',
+] as const;

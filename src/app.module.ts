@@ -14,6 +14,7 @@ import { ReportsModule } from './reports/reports.module';
 import { AnalyzeModule } from './analyze/analyze.module';
 import { StorageModule } from './storage/storage.module';
 import { AppController } from './app.controller';
+import { RegionModule } from './region/region.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AppController } from './app.controller';
     ReportsModule,
     AnalyzeModule,
     StorageModule,
+    RegionModule,
   ],
   providers: [
     AppService,
