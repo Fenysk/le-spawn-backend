@@ -86,24 +86,7 @@ export class IgdbService implements OnModuleInit {
         }
     }
 
-    async getPlatformById(id: number): Promise<IGDBPlatformResponse> {
-        try {
-            await this.ensureValidToken();
-            const { data } = await this.client
-                .fields(PLATFORM_FIELDS)
-                .where(`id = ${id}`)
-                .request('/platforms');
-
-            if (!data.length)
-                throw new NotFoundException(`Platform with ID ${id} not found in IGDB`);
-
-            return data[0];
-        } catch (error) {
-            this.logger.error(`Failed to fetch platform with ID ${id}`, error);
-            throw error;
-        }
-    }
-
+    
     async getGameLocalizations(id: number): Promise<IGDBGameLocalizationResponse[]> {
         try {
             await this.ensureValidToken();
@@ -118,6 +101,26 @@ export class IgdbService implements OnModuleInit {
             return data;
         } catch (error) {
             this.logger.error(`Failed to fetch game localization with id ${id}`, error);
+            throw error;
+        }
+    }
+
+    async getPlatformById(id: number): Promise<IGDBPlatformResponse> {
+        try {
+            await this.ensureValidToken();
+            const { data } = await this.client
+                .fields(PLATFORM_FIELDS)
+                .where(`id = ${id}`)
+                .request('/platforms');
+
+            if (!data.length)
+                throw new NotFoundException(`Platform with ID ${id} not found in IGDB`);
+
+            const platform = data[0];
+
+            return platform;
+        } catch (error) {
+            this.logger.error(`Failed to fetch platform with ID ${id}`, error);
             throw error;
         }
     }

@@ -5,7 +5,7 @@ export interface IGDBPlatformResponse {
     category: number;
     created_at: number;
     name: string;
-    platform_logo: number;
+    platform_logo?: PlatformLogo;
     platform_family?: number;
     slug: string;
     updated_at: number;
@@ -14,4 +14,14 @@ export interface IGDBPlatformResponse {
     websites: number[];
     checksum: string;
     generation?: number;
+}
+
+export interface PlatformLogo {
+    alpha_channel: boolean;
+    animated: boolean;
+    checksum: string;
+    height: number;
+    image_id: string;
+    url: string;
+    width: number;
 }

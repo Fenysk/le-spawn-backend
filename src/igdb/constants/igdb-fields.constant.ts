@@ -20,8 +20,6 @@ export const GAME_FIELDS = [
   'videos.*',
 ] as const;
 
-export const PLATFORM_FIELDS = ['*'] as const;
-
 export const GAME_LOCALIZATION_FIELDS = [
   'checksum',
   'cover.*',
@@ -30,4 +28,24 @@ export const GAME_LOCALIZATION_FIELDS = [
   'name',
   'region.*',
   'updated_at',
+] as const;
+
+
+export const PLATFORM_FIELDS = [
+  'abbreviation',
+  'alternative_name',
+  'category',
+  'checksum',
+  'created_at',
+  'generation',
+  'name',
+  'platform_family',
+  'platform_logo.*',
+  'platform_type',
+  'slug',
+  'summary',
+  'updated_at',
+  'url',
+  'versions',
+  'websites',
 ] as const;
