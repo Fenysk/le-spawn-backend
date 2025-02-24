@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppService {
   constructor(
     private readonly configService: ConfigService
-  ) {}
+  ) { }
 
   getHealthCheck(): string {
     return 'OK';
@@ -14,7 +14,11 @@ export class AppService {
   isCurrentVersionGreaterThanRequired(
     currentFrontVersion: string,
   ): boolean {
-    const frontVersionRequired = this.configService.get('FRONT_VERSION_REQUIRED');
-    return currentFrontVersion >= frontVersionRequired;
+    const frontVersionRequired = this.configService.get<string>('FRONT_VERSION_REQUIRED');
+
+    if (currentFrontVersion < frontVersionRequired)
+      throw new BadRequestException(`Update required to version ${frontVersionRequired}`);
+
+    return true;
   }
 }
