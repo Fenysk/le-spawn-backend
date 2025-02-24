@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsString, IsNumber, IsOptional, IsArray, IsEnum, IsDate, IsUrl } from 'class-validator';
-import { GameCategoryEnumInt } from 'src/igdb/enum/game-category.enum';
+import { IsNotEmpty, IsString, IsNumber, IsOptional, IsArray, IsEnum, IsDate, IsUrl, ValidateNested, IsUUID } from 'class-validator';
+import { GameCategoryEnumInt } from '@/igdb/enum/game-category.enum';
+import { Type } from 'class-transformer';
 
 export class NewGameRequest {
     @IsOptional()
@@ -51,4 +52,25 @@ export class NewGameRequest {
     @IsArray()
     @IsString({ each: true })
     platformIds?: string[];
+
+    @IsOptional()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => NewGameLocalizationRequest)
+    gameLocalizations?: NewGameLocalizationRequest[];
+}
+
+export class NewGameLocalizationRequest {
+    @IsOptional()
+    @IsString()
+    name?: string;
+
+    @IsOptional()
+    @IsUrl()
+    coverUrl?: string;
+
+    @IsNotEmpty()
+    @IsString()
+    @IsUUID()
+    regionId: string;
 }

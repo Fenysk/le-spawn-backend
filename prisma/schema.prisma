@@ -40,30 +40,53 @@ model Profile {
 model Game {
   id         String @id @unique @default(uuid())
   igdbGameId Int?   @unique
-
   isIgdbBanned Boolean @default(false)
-
-  barcodes String[]
-
-  category GameCategoryEnum
-  coverUrl String?
-
-  firstReleaseDate DateTime?
-
-  franchises String[]
-  genres     String[]
 
   name String
 
+  category GameCategoryEnum
+
+  coverUrl String?
+  firstReleaseDate DateTime?
+
+  barcodes String[]
   screenshotsUrl String[]
 
   storyline String?
   summary   String?
 
+  franchises String[]
+  genres     String[]
+
   platformsRelation  ManyGamePlatform[]   @relation("ManyGamePlatformToGame")
   gameCollectionItem GameCollectionItem[] @relation("GameCollectionItemToGame")
 
   reports GameReport[] @relation("GameReportToGame")
+  gameLocalizations GameLocalization[] @relation("GameLocalizationToGame")
+}
+
+model GameLocalization {
+  id String @id @unique @default(uuid())
+
+  name String?
+  coverUrl String?
+
+  regionId String
+  region   Region   @relation("GameLocalizationToRegion", fields: [regionId], references: [id])
+
+  gameId String
+  game   Game   @relation("GameLocalizationToGame", fields: [gameId], references: [id])
+}
+
+model Region {
+  id String @id @unique @default(uuid())
+  
+  name String
+  abbreviation String?
+
+  gameLocalizations GameLocalization[] @relation("GameLocalizationToRegion")
+
+  @@unique([name, abbreviation])
 }
 
 model Platform {
@@ -71,7 +94,8 @@ model Platform {
   igdbPlatformId Int?   @unique
 
   name         String
-  abbreviation String
+  abbreviation String?
+  logoUrl      String?
 
   generation Int?
 

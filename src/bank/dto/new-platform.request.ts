@@ -9,9 +9,13 @@ export class NewPlatformRequest {
   @IsString()
   name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  abbreviation: string;
+  abbreviation?: string;
+
+  @IsOptional()
+  @IsString()
+  logoUrl?: string;
 
   @IsOptional()
   @IsNumber()

@@ -42,7 +42,12 @@ export class GamesBankService {
                     include: {
                         platform: true
                     }
-                }
+                },
+                gameLocalizations: {
+                    include: {
+                        region: true
+                    }
+                },
             }
         });
 
@@ -52,7 +57,7 @@ export class GamesBankService {
         return games;
     }
 
-    async searchGamesInProviders(searchGamesDto: SearchGamesRequest) {
+    async searchGamesInProviders(searchGamesDto: SearchGamesRequest): Promise<Game[]> {
         try {
             const igdbGames = await this.igdbService.getGamesFromName(searchGamesDto.query);
 
@@ -64,18 +69,35 @@ export class GamesBankService {
         }
     }
 
-    async addGameToBank(
+    async upsertGameToBank(
         gameData: NewGameRequest
     ): Promise<Game> {
         const category = getGameCategoryEnum(gameData.category);
         const coverFullUrl = this.igdbService.getGameCoverFullUrl(gameData.coverUrl);
 
-        const isIgdbBanned = gameData.category === GameCategoryEnumInt.mod || gameData.category === GameCategoryEnumInt.fork || gameData.category === GameCategoryEnumInt.update;
+        const isIgdbBanned = [
+            GameCategoryEnumInt.mod,
+            GameCategoryEnumInt.fork,
+            GameCategoryEnumInt.update,
+            GameCategoryEnumInt.dlcAddon,
+        ].includes(gameData.category);
 
         try {
             const existingGame = await this.prismaService.game.findUnique({
                 where: {
                     igdbGameId: gameData.igdbGameId
+                },
+                include: {
+                    gameLocalizations: {
+                        include: {
+                            region: true
+                        }
+                    },
+                    platformsRelation: {
+                        include: {
+                            platform: true
+                        }
+                    },
                 }
             });
 
@@ -88,6 +110,15 @@ export class GamesBankService {
                     barcodes: gameData.barcodes,
                     category: category,
                     coverUrl: coverFullUrl,
+                    gameLocalizations: {
+                        create: gameData.gameLocalizations.map(localization => ({
+                            region: {
+                                connect: { id: localization.regionId }
+                            },
+                            name: localization.name,
+                            coverUrl: localization.coverUrl
+                        }))
+                    },
                     firstReleaseDate: gameData.firstReleaseDate,
                     isIgdbBanned: isIgdbBanned,
                     franchises: gameData.franchises,
@@ -111,7 +142,12 @@ export class GamesBankService {
                         include: {
                             platform: true
                         }
-                    }
+                    },
+                    gameLocalizations: {
+                        include: {
+                            region: true
+                        }
+                    },
                 }
             });
 

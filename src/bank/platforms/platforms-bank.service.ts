@@ -14,17 +14,15 @@ export class PlatformsBankService {
         try {
             const whereConditions: Prisma.PlatformWhereInput[] = [];
 
-            if (searchPlatformsDto.query) {
+            if (searchPlatformsDto.query)
                 whereConditions.push({ name: { contains: searchPlatformsDto.query, mode: 'insensitive' } });
-            }
 
             const platforms = await this.prismaService.platform.findMany({
-                where: whereConditions.length ? { OR: whereConditions } : {}
+                where: whereConditions.length ? { OR: whereConditions } : {},
             });
 
-            if (!platforms.length) {
+            if (!platforms.length)
                 throw new NotFoundException('No platforms found matching the search criteria');
-            }
 
             return platforms;
         } catch (error) {
@@ -61,13 +59,15 @@ export class PlatformsBankService {
                 update: {
                     name: platformData.name,
                     abbreviation: platformData.abbreviation,
-                    generation: platformData.generation
+                    generation: platformData.generation,
+                    logoUrl: platformData.logoUrl
                 },
                 create: {
                     igdbPlatformId: platformData.igdbPlatformId,
                     name: platformData.name,
                     abbreviation: platformData.abbreviation,
-                    generation: platformData.generation
+                    generation: platformData.generation,
+                    logoUrl: platformData.logoUrl
                 }
             });
             return newPlatform;

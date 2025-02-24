@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, BadRequestException, Post, Body } from '@nestjs/common';
 import { IgdbService } from './igdb.service';
 
 @Controller('igdb')
@@ -33,5 +33,11 @@ export class IgdbController {
       throw new BadRequestException('Invalid platform ID');
     
     return this.igdbService.getPlatformById(id);
+  }
+  @Get('game-localization/:id')
+  async getGameLocalizationById(
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<any> {
+    return this.igdbService.getGameLocalizations(id);
   }
 }

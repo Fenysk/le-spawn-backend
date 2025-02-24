@@ -11,6 +11,10 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { BarcodeProviderModule } from './barcode-provider/barcode-provider.module';
 import { ReportsModule } from './reports/reports.module';
+import { AnalyzeModule } from './analyze/analyze.module';
+import { StorageModule } from './storage/storage.module';
+import { AppController } from './app.controller';
+import { RegionModule } from './region/region.module';
 
 @Module({
   imports: [
@@ -25,9 +29,15 @@ import { ReportsModule } from './reports/reports.module';
     UsersModule,
     BarcodeProviderModule,
     ReportsModule,
+    AnalyzeModule,
+    StorageModule,
+    RegionModule,
   ],
   providers: [
     AppService,
+  ],
+  controllers: [
+    AppController,
   ],
 })
 export class AppModule { }

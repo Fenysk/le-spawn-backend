@@ -4,7 +4,8 @@ import igdb from 'igdb-api-node';
 import { TwitchService } from '@/twitch/twitch.service';
 import { IGDBGameResponse } from './interface/igdb-game.response';
 import { IGDBPlatformResponse } from './interface/igdb-platform.response';
-import { GAME_FIELDS, PLATFORM_FIELDS } from './constants/igdb-fields.constant';
+import { GAME_FIELDS, GAME_LOCALIZATION_FIELDS, PLATFORM_FIELDS } from './constants/igdb-fields.constant';
+import { IGDBGameLocalizationResponse } from './interface/igdb-game-localization.response';
 
 @Injectable()
 export class IgdbService implements OnModuleInit {
@@ -85,6 +86,25 @@ export class IgdbService implements OnModuleInit {
         }
     }
 
+    
+    async getGameLocalizations(id: number): Promise<IGDBGameLocalizationResponse[]> {
+        try {
+            await this.ensureValidToken();
+            const { data } = await this.client
+                .fields(GAME_LOCALIZATION_FIELDS)
+                .where(`id = ${id}`)
+                .request('/game_localizations');
+
+            if (!data.length)
+                throw new NotFoundException(`Game localization with id ${id} not found in IGDB`);
+
+            return data;
+        } catch (error) {
+            this.logger.error(`Failed to fetch game localization with id ${id}`, error);
+            throw error;
+        }
+    }
+
     async getPlatformById(id: number): Promise<IGDBPlatformResponse> {
         try {
             await this.ensureValidToken();
@@ -96,24 +116,35 @@ export class IgdbService implements OnModuleInit {
             if (!data.length)
                 throw new NotFoundException(`Platform with ID ${id} not found in IGDB`);
 
-            return data[0];
+            const platform = data[0];
+            
+            // TODO: Get all platforms versions
+
+            return platform;
         } catch (error) {
             this.logger.error(`Failed to fetch platform with ID ${id}`, error);
             throw error;
         }
     }
 
-    getGameCoverFullUrl(coverUrl: string | undefined): string {
+    public getGameCoverFullUrl(coverUrl: string | undefined): string {
         if (!coverUrl) return '';
         return coverUrl
             .replace(/^(https?:)?\/\//, this.IMAGE_BASE_URL)
             .replace('t_thumb', this.COVER_SIZE);
     }
 
-    getScreenshotFullUrl(screenshotUrl: string | undefined): string {
+    public getScreenshotFullUrl(screenshotUrl: string | undefined): string {
         if (!screenshotUrl) return '';
         return screenshotUrl
             .replace(/^(https?:)?\/\//, this.IMAGE_BASE_URL)
             .replace('t_thumb', this.SCREENSHOT_SIZE);
+    }
+
+    public getLogoFullUrl(logoUrl: string | undefined): string {
+        if (!logoUrl) return '';
+        return logoUrl
+            .replace(/^(https?:)?\/\//, this.IMAGE_BASE_URL)
+            .replace('t_thumb', this.COVER_SIZE);
     }
 }

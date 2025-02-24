@@ -5,6 +5,7 @@ export interface IGDBGameResponse {
   cover: Cover;
   first_release_date: number;
   franchises?: Franchise[];
+  game_localizations?: GameLocalization[];
   genres: Genre[];
   name: string;
   platforms: Platform[];
@@ -120,5 +121,15 @@ interface AlternativeName {
   comment: string;
   game: number;
   name: string;
+  checksum: string;
+}
+
+interface GameLocalization {
+  id: number;
+  name: string;
+  game: number;
+  region: number;
+  created_at: number;
+  updated_at: number;
   checksum: string;
 }
