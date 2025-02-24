@@ -1,6 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { AppService } from './app.service';
+import { Public } from './common/decorator/public.decorator';
 
+@Public()
 @Controller()
 export class AppController {
     constructor(
@@ -10,5 +12,14 @@ export class AppController {
     @Get()
     getHealthCheck(): string {
         return this.appService.getHealthCheck();
+    }
+
+    @Get('check-update/:version')
+    checkUpdate(
+        @Param('version') version: string,
+    ): boolean {
+        return this.appService.isCurrentVersionGreaterThanRequired(
+            version
+        );
     }
 }
