@@ -95,6 +95,7 @@ model Platform {
 
   name         String
   abbreviation String?
+  logoUrl      String?
 
   generation Int?
 

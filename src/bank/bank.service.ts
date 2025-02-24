@@ -114,6 +114,7 @@ export class BankService {
                         igdbPlatformId: +platformFromIgdb.id,
                         name: igdbPlatform.name,
                         abbreviation: igdbPlatform.abbreviation,
+                        logoUrl: this.igdbService.getLogoFullUrl(igdbPlatform.platform_logo?.url),
                         generation: igdbPlatform.generation
                     };
                     return await this.platformsBankService.addPlatformToBank(platformData);

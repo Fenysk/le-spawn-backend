@@ -117,6 +117,8 @@ export class IgdbService implements OnModuleInit {
                 throw new NotFoundException(`Platform with ID ${id} not found in IGDB`);
 
             const platform = data[0];
+            
+            // TODO: Get all platforms versions
 
             return platform;
         } catch (error) {
@@ -137,5 +139,12 @@ export class IgdbService implements OnModuleInit {
         return screenshotUrl
             .replace(/^(https?:)?\/\//, this.IMAGE_BASE_URL)
             .replace('t_thumb', this.SCREENSHOT_SIZE);
+    }
+
+    public getLogoFullUrl(logoUrl: string | undefined): string {
+        if (!logoUrl) return '';
+        return logoUrl
+            .replace(/^(https?:)?\/\//, this.IMAGE_BASE_URL)
+            .replace('t_thumb', this.COVER_SIZE);
     }
 }

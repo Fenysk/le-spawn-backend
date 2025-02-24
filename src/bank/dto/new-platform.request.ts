@@ -14,6 +14,10 @@ export class NewPlatformRequest {
   abbreviation?: string;
 
   @IsOptional()
+  @IsString()
+  logoUrl?: string;
+
+  @IsOptional()
   @IsNumber()
   generation?: number;
 }
