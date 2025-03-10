@@ -1,5 +1,5 @@
-import { IGDBGameLocalizationRegion } from '@/igdb/interface/igdb-game-localization.response';
-import { PrismaService } from '@/prisma/prisma.service';
+import { IGDBGameLocalizationRegion } from '@/providers/igdb/interface/igdb-game-localization.response';
+import { PrismaService } from '@/common/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Region } from '@prisma/client';
 

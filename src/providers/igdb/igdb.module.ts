@@ -1,17 +1,20 @@
 import { Module } from '@nestjs/common';
 import { IgdbService } from './igdb.service';
-import { TwitchModule } from '@/twitch/twitch.module';
 import { IgdbController } from './igdb.controller';
+import { CommonModule } from '@/common/common.module';
+import { TwitchService } from './twitch/twitch.service';
 
 @Module({
   imports: [
-    TwitchModule,
+    CommonModule,
   ],
   providers: [
-    IgdbService
+    IgdbService,
+    TwitchService,
   ],
   exports: [
-    IgdbService
+    IgdbService,
+    TwitchService,
   ],
   controllers: [IgdbController],
 })

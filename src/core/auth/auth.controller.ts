@@ -1,14 +1,14 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
-import { AuthService } from '@/auth/auth.service';
-import { RegisterRequest } from '@/auth/dto/register.request';
-import { LocalAuthGuard } from '@/auth/guards/local-auth.guard';
+import { AuthService } from '@/core/auth/auth.service';
+import { RegisterRequest } from '@/core/auth/dto/register.request';
+import { LocalAuthGuard } from '@/core/auth/guards/local-auth.guard';
 import { GetUser } from '@/common/decorator/get-user.decorator';
 import { User } from '@prisma/client';
 import { Response } from 'express';
-import { JwtRefreshAuthGuard } from '@/auth/guards/jwt-refresh-auth.guard';
-import { GoogleAuthGuard } from '@/auth/guards/google-auth.guard';
+import { JwtRefreshAuthGuard } from '@/core/auth/guards/jwt-refresh-auth.guard';
+import { GoogleAuthGuard } from '@/core/auth/guards/google-auth.guard';
 import { Public } from '@/common/decorator/public.decorator';
-import { GoogleLoginFromAppRequest } from '@/auth/dto/google-login-from-app.request';
+import { GoogleLoginFromAppRequest } from '@/core/auth/dto/google-login-from-app.request';
 
 @Controller('auth')
 export class AuthController {

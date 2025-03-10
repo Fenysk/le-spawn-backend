@@ -1,8 +1,8 @@
 import { Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
-import { UsersService } from '@/users/users.service';
+import { UsersService } from '@/core/users/users.service';
 import { Profile, User } from '@prisma/client';
 import { GetUser } from '@/common/decorator/get-user.decorator';
-import { UpdateMyProfileRequest } from '@/users/dto/update-my-profile.request';
+import { UpdateMyProfileRequest } from '@/core/users/dto/update-my-profile.request';
 import { Public } from '@/common/decorator/public.decorator';
 
 @Controller('users')

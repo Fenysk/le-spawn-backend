@@ -1,6 +1,6 @@
 import { BadRequestException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ScandexLookupResponse } from '@/barcode-provider/scandex/interface/lookup.response';
+import { ScandexLookupResponse } from '@/providers/barcode/scandex/interface/lookup.response';
 import { ApiService } from '@/common/services/api.service';
 import { Logger } from '@nestjs/common';
 

@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException, OnModuleInit, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import igdb from 'igdb-api-node';
-import { TwitchService } from '@/twitch/twitch.service';
 import { IGDBGameResponse } from './interface/igdb-game.response';
 import { IGDBPlatformResponse } from './interface/igdb-platform.response';
 import { GAME_FIELDS, GAME_LOCALIZATION_FIELDS, PLATFORM_FIELDS } from './constants/igdb-fields.constant';
 import { IGDBGameLocalizationResponse } from './interface/igdb-game-localization.response';
+import { TwitchService } from './twitch/twitch.service';
 
 @Injectable()
 export class IgdbService implements OnModuleInit {

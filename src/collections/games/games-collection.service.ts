@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaService } from '@/common/prisma/prisma.service';
 import { AddGameItemToCollectionRequest } from '@/collections/dto/add-game-item-to-collection.request';
 import { GamesBankService } from '@/bank/games/games-bank.service';
 import { GameCollectionItem } from '@prisma/client';

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, ServiceUnavailableException } fr
 import { ConfigService } from '@nestjs/config';
 import { ApiService } from '@/common/services/api.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { UpcitemdbApiResponse } from '@/barcode-provider/upcitemdb/interface/upcitemdb-api.response';
+import { UpcitemdbApiResponse } from '@/providers/barcode/upcitemdb/interface/upcitemdb-api.response';
 import { Logger } from '@nestjs/common';
 
 @Injectable()

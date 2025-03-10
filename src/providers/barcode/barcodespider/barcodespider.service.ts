@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, NotFoundException, UnauthorizedException, ServiceUnavailableException, HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { BarcodespiderApiResponse } from '@/barcode-provider/barcodespider/interfaces/barcodespider-api.response';
+import { BarcodespiderApiResponse } from '@/providers/barcode/barcodespider/interfaces/barcodespider-api.response';
 import { ApiService } from '@/common/services/api.service';
 import { Logger } from '@nestjs/common';
 
