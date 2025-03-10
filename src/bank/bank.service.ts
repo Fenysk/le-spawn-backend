@@ -82,7 +82,7 @@ export class BankService {
 
     async fetchGamesFromImages(request: GetGamesFromImagesRequest): Promise<Game[]> {
         try {
-            const analysis = await this.analyzeService.analyzeGame(request.images);
+            const analysis = await this.analyzeService.analyzeGameFromImages(request.images);
 
             try {
                 const games = await this.gamesBankService.searchGamesInProviders({ query: analysis.title });

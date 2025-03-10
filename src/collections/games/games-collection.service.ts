@@ -1,16 +1,80 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '@/common/prisma/prisma.service';
 import { AddGameItemToCollectionRequest } from '@/collections/dto/add-game-item-to-collection.request';
 import { GamesBankService } from '@/bank/games/games-bank.service';
-import { GameCollectionItem } from '@prisma/client';
+import { Game, GameCollectionItem } from '@prisma/client';
 import { UpdateGameItemInCollectionRequest } from '@/collections/dto/update-game-item-in-collection.request';
+import { ExperimentalAddGameItemToCollectionRequest } from '../dto/experimental-add-game-item-to-collection.request';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { GamesCollectionEventNames } from '../events/games-collection.events';
 
 @Injectable()
 export class GamesCollectionService {
     constructor(
         private readonly prismaService: PrismaService,
         private readonly gamesBankService: GamesBankService,
+        private readonly eventEmitter: EventEmitter2
     ) { }
+
+    /** Experimental */
+    async experimentalAddGameToCollection(
+        userId: string,
+        gameItemData: ExperimentalAddGameItemToCollectionRequest
+    ): Promise<GameCollectionItem> {
+        const { collectionId, frontGameImageUrl: frontImageUrl, backGameImageUrl: backImageUrl, barcode } = gameItemData;
+
+        let collection;
+        if (collectionId) {
+            collection = await this.prismaService.collection.findUnique({ where: { id: collectionId } });
+        } else {
+            collection = await this.prismaService.collection.findFirst({ where: { userId } });
+        }
+
+        if (!collection || collection.userId !== userId) {
+            throw new UnauthorizedException('Unauthorized');
+        }
+
+        const newGameItem = await this.prismaService.gameCollectionItem.create({
+            data: {
+                collection: { connect: { id: collection.id } },
+                frontImageUrl,
+                backImageUrl,
+            },
+        });
+
+        this.eventEmitter.emit(GamesCollectionEventNames.NEW_GAME_ITEM_ADDED, {
+            newGameItem,
+            barcode,
+        });
+
+        return newGameItem;
+    }
+
+    async assignGameToItem(gameItem: GameCollectionItem, game: Game): Promise<void> {
+        const existingGameItem = await this.prismaService.gameCollectionItem.findUnique({
+            where: { id: gameItem.id },
+            select: { gameId: true },
+        });
+
+        if (existingGameItem?.gameId)
+            throw new ConflictException('Game already associated with this item');
+
+        await this.prismaService.gameCollectionItem.update({
+            where: { id: gameItem.id },
+            data: { game: { connect: { id: game.id } } },
+        });
+    }
+    /*****************/
+
+    async getGameItemById(
+        userId: string,
+        gameItemId: string
+    ): Promise<GameCollectionItem> {
+        return this.prismaService.gameCollectionItem.findUnique({
+            where: { id: gameItemId },
+            include: { game: true }
+        });
+    }
 
     async addGameToCollection(
         userId: string,

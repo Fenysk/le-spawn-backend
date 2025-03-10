@@ -20,9 +20,49 @@ export class MistralService {
       throw new BadRequestException('Invalid message format from Mistral API');
   }
 
+  async analyzeText(text: string, prompt: string): Promise<string> {
+    try {
+      const response = await fetch(`${this.apiUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: this.MODEL,
+          messages: [
+            {
+              role: 'user',
+              content: [
+                { type: 'text', text: prompt },
+                { type: 'text', text },
+              ],
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        this.logger.error('Mistral API error', errorData);
+        throw new BadRequestException('Error from Mistral API: ' + response.statusText);
+      }
+
+      const data = await response.json();
+      this.validateApiResponse(data);
+      return data.choices[0].message.content;
+    } catch (error) {
+      this.logger.error('Error analyzing text', error);
+      if (error instanceof BadRequestException) throw error;
+      throw new BadRequestException('Failed to analyze text');
+    }
+  }
+
   async analyzeImages(imageUrls: string[], prompt: string): Promise<string> {
     try {
-      const imageContents = imageUrls.map((url) => ({
+      const validImageUrls = imageUrls.filter((url): url is string => url !== null);
+
+      const imageContents = validImageUrls.map((url) => ({
         type: 'image_url',
         image_url: { url }
       }));

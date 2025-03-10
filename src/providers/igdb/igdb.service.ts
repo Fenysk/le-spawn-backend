@@ -81,7 +81,7 @@ export class IgdbService implements OnModuleInit {
 
             return data;
         } catch (error) {
-            this.logger.error(`Failed to search games with name "${name}"`, error);
+            this.logger.error(`Failed to search games with name "${name}"`);
             throw error;
         }
     }

@@ -14,10 +14,13 @@ import { AnalyzeModule } from './analyze/analyze.module';
 import { StorageModule } from './storage/storage.module';
 import { AppController } from './app.controller';
 import { RegionModule } from './bank/region/region.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    EventEmitterModule.forRoot(),
     PrismaModule,
     AuthModule,
     IgdbModule,
@@ -30,6 +33,7 @@ import { RegionModule } from './bank/region/region.module';
     AnalyzeModule,
     StorageModule,
     RegionModule,
+    EventsModule,
   ],
   providers: [
     AppService,
