@@ -60,12 +60,27 @@ export class MistralService {
 
   async analyzeImages(imageUrls: string[], prompt: string): Promise<string> {
     try {
-      const validImageUrls = imageUrls.filter((url): url is string => url !== null);
+      const validImageUrls = imageUrls.filter((url): url is string => url !== null && url !== '');
 
       const imageContents = validImageUrls.map((url) => ({
         type: 'image_url',
         image_url: { url }
       }));
+
+      const requestBody = {
+        model: this.MODEL,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: prompt },
+              ...imageContents,
+            ],
+          },
+        ],
+      };
+
+      this.logger.log('Request body:', requestBody);
 
       const response = await fetch(`${this.apiUrl}/chat/completions`, {
         method: 'POST',
@@ -73,18 +88,7 @@ export class MistralService {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.apiKey}`,
         },
-        body: JSON.stringify({
-          model: this.MODEL,
-          messages: [
-            {
-              role: 'user',
-              content: [
-                { type: 'text', text: prompt },
-                ...imageContents,
-              ],
-            },
-          ],
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {

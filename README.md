@@ -1,73 +1,81 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+## Compétences couvertes
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+### 1. Architecture & Design Patterns
+- Architecture Hexagonale / Clean Architecture
+- Séparation claire des couches (controllers, services, providers)
+- Utilisation d'interfaces pour les dépendances externes
+- Inversion des dépendances (DI) via NestJS
+- Repository Pattern (via Prisma)
+- Decorator Pattern (ex: @Public(), @Roles())
+- Strategy Pattern (authentification multiple)
+- Factory Pattern (création d'instances)
+- Observer Pattern (via Event Emitter)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### 2. Sécurité & Authentification
+- Gestion avancée de l'authentification
+- JWT (Access & Refresh tokens)
+- OAuth2
+- Hachage sécurisé avec Argon2
+- Chiffrement AES-256-GCM
+- Protection contre les injections SQL (via Prisma)
+- Validation des entrées (class-validator)
 
-## Description
+### 3. Base de données & ORM
+- Prisma ORM
+- Prisma Migrations
+- Prisma Transactions
+- Gestion des erreurs personnalisée
+- PostgreSQL (via Prisma)
+- Relations complexes (Many-to-Many, One-to-Many)
+- Contraintes d'unicité
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 4. API & Intégrations
+- APIs externes
+- IGDB API (jeux vidéo)
+- APIs de codes-barres multiples
+- API Mistral (IA)
+- API Twitch
+- Gestion des tokens OAuth
+- Versioning d'API
+- Documentation OpenAPI/Swagger
+- Gestion des erreurs HTTP
 
-## Installation
+### 5. Intelligence Artificielle & Analyse d'Images
+- Intégration IA
+- Analyse d'images avec Mistral AI
+- Extraction d'informations structurées
+- Comparaison sémantique
 
-```bash
-$ pnpm install
-```
+### 6. Gestion du Code & DevOps
+- TypeScript strict (pas de any)
+- Gestion des environnements
+- Scripts de déploiement
+- Gestion des versions
 
-## Running the app
+### 7. Patterns Architecturaux Avancés
+- Event-Driven Architecture (pour l'ajout d'un jeu)
+- Gestion asynchrone des événements
+- Découplage des composants
+- Communication inter-services
+- Gestion des configurations
 
-```bash
-# development
-$ pnpm run start
+### 8. Performance & Scalabilité
+- Optimisations
+- Pagination des résultats
 
-# watch mode
-$ pnpm run start:dev
+### 9. Gestion des Fichiers & Storage
+- Intégration MinIO (S3)
+- Traitement des images
 
-# production mode
-$ pnpm run start:prod
-```
+### 10. Compétences Techniques Spécifiques
+- NestJS avancé
+- TypeScript
+- Node.js
 
-## Test
-
-```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+### 11. Bonnes Pratiques de Développement
+- Clean Code
+- SOLID Principles
+- DRY (Don't Repeat Yourself)
+- KISS (Keep It Simple, Stupid)
+- Separation of Concerns
+- Documentation API

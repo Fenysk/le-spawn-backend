@@ -93,6 +93,8 @@ export class EventsService {
         gamesFromAppDB: Game[]
     ): Promise<void> {
         console.log('Handling multiple games found from app DB with barcode');
+        console.log('Games found in the app DB:', gamesFromAppDB);
+
         // TODO: L'IA compare les photos avec les détails des jeux
         // TODO: L'IA renvoie l'ID du jeu correspondant
         // TODO: Attribuer l'ID du jeu app à l'item-jeu

@@ -62,7 +62,7 @@ export class AnalyzeService {
   async compareGamesListFromAnalyzeResponse(analyzeResponse: GameAnalyzeResponse, appGames: Game[]): Promise<Game> {
     const maxRetries = 3;
     let attempt = 0;
-    
+
     // Sanitize the games list to keep only essential information
     const sanitizedGames = this.sanitizeGamesList(appGames);
 

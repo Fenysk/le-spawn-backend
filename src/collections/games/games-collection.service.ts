@@ -2,7 +2,7 @@ import { ConflictException, Injectable, NotFoundException, UnauthorizedException
 import { PrismaService } from '@/common/prisma/prisma.service';
 import { AddGameItemToCollectionRequest } from '@/collections/dto/add-game-item-to-collection.request';
 import { GamesBankService } from '@/bank/games/games-bank.service';
-import { Game, GameCollectionItem } from '@prisma/client';
+import { Collection, Game, GameCollectionItem } from '@prisma/client';
 import { UpdateGameItemInCollectionRequest } from '@/collections/dto/update-game-item-in-collection.request';
 import { ExperimentalAddGameItemToCollectionRequest } from '../dto/experimental-add-game-item-to-collection.request';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -23,17 +23,16 @@ export class GamesCollectionService {
     ): Promise<GameCollectionItem> {
         const { collectionId, frontGameImageUrl: frontImageUrl, backGameImageUrl: backImageUrl, barcode } = gameItemData;
 
-        let collection;
-        if (collectionId) {
+        let collection : Collection;
+        
+        if (collectionId) 
             collection = await this.prismaService.collection.findUnique({ where: { id: collectionId } });
-        } else {
+        else 
             collection = await this.prismaService.collection.findFirst({ where: { userId } });
-        }
-
-        if (!collection || collection.userId !== userId) {
+        
+        if (!collection || collection.userId !== userId) 
             throw new UnauthorizedException('Unauthorized');
-        }
-
+        
         const newGameItem = await this.prismaService.gameCollectionItem.create({
             data: {
                 collection: { connect: { id: collection.id } },
