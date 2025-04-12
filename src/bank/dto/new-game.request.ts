@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, IsNumber, IsOptional, IsArray, IsEnum, IsDate, IsUrl, ValidateNested, IsUUID } from 'class-validator';
-import { GameCategoryEnumInt } from '@/igdb/enum/game-category.enum';
+import { GameCategoryEnumInt } from '@/providers/igdb/enum/game-category.enum';
 import { Type } from 'class-transformer';
 
 export class NewGameRequest {

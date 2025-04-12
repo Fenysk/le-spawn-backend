@@ -116,16 +116,19 @@ model Collection {
 model GameCollectionItem {
   id String @id @unique @default(uuid())
 
-  hasBox   Boolean
-  hasGame  Boolean
-  hasPaper Boolean
+  hasBox   Boolean @default(false)
+  hasGame  Boolean @default(false)
+  hasPaper Boolean @default(false)
 
   stateBox   String?
   stateGame  String?
   statePaper String?
 
-  gameId String
-  game   Game   @relation("GameCollectionItemToGame", fields: [gameId], references: [id])
+  frontImageUrl String?
+  backImageUrl  String?
+
+  gameId String?
+  game   Game?   @relation("GameCollectionItemToGame", fields: [gameId], references: [id])
 
   collectionId String
   collection   Collection @relation("GameCollectionItemToCollection", fields: [collectionId], references: [id])

@@ -1,9 +1,9 @@
-import { Controller, Post, Body, Put, Delete, Param } from '@nestjs/common';
+import { Controller, Post, Body, Put, Delete, Param, Get } from '@nestjs/common';
 import { GamesCollectionService } from '@/collections/games/games-collection.service';
-import { AddGameItemToCollectionRequest } from '@/collections/dto/add-game-item-to-collection.request';
 import { GameCollectionItem, User } from '@prisma/client';
 import { UpdateGameItemInCollectionRequest } from '@/collections/dto/update-game-item-in-collection.request';
 import { GetUser } from '@/common/decorator/get-user.decorator';
+import { AddGameItemToCollectionRequest } from '../dto/add-game-item-to-collection.request';
 
 @Controller('collections/games')
 export class GamesCollectionController {
@@ -15,6 +15,14 @@ export class GamesCollectionController {
         @Body() gameItemData: AddGameItemToCollectionRequest
     ): Promise<GameCollectionItem> {
         return this.gamesCollectionService.addGameToCollection(user.id, gameItemData);
+    }
+
+    @Get(':id')
+    getGameItemById(
+        @GetUser() user: User,
+        @Param('id') gameItemId: string
+    ): Promise<GameCollectionItem> {
+        return this.gamesCollectionService.getGameItemById(user.id, gameItemId);
     }
 
     @Put()

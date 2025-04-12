@@ -1,35 +1,19 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+    import { IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 
-export class AddGameItemToCollectionRequest {
-    @IsNotEmpty()
-    @IsUUID()
-    collectionId: string;
+    export class AddGameItemToCollectionRequest {
+        @IsNotEmpty()
+        @IsString()
+        frontGameImageUrl: string;
 
-    @IsNotEmpty()
-    @IsUUID()
-    gameId: string;
+        @IsOptional()
+        @IsString()
+        backGameImageUrl?: string;
 
-    @IsNotEmpty()
-    @IsBoolean()
-    hasBox: boolean;
+        @IsOptional()
+        @IsString()
+        barcode?: string;
 
-    @IsNotEmpty()
-    @IsBoolean()
-    hasGame: boolean;
-
-    @IsNotEmpty()
-    @IsBoolean()
-    hasPaper: boolean;
-
-    @IsOptional()
-    @IsString()
-    stateBox?: string;
-
-    @IsOptional()
-    @IsString()
-    stateGame?: string;
-
-    @IsOptional()
-    @IsString()
-    statePaper?: string;
-}
+        @IsOptional()
+        @IsUUID()
+        collectionId?: string;
+    }

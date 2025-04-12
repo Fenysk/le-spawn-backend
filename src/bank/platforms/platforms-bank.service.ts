@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaService } from '@/common/prisma/prisma.service';
 import { NewPlatformRequest } from '@/bank/dto/new-platform.request';
 import { Platform, Prisma } from '@prisma/client';
 import { SearchPlatformsRequest } from '@/bank/dto/search-platforms.request';

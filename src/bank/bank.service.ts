@@ -1,18 +1,18 @@
 import { BadRequestException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { ScandexService } from '@/barcode-provider/scandex/scandex.service';
-import { IgdbService } from '@/igdb/igdb.service';
+import { ScandexService } from '@/providers/barcode/scandex/scandex.service';
+import { IgdbService } from '@/providers/igdb/igdb.service';
 import { GamesBankService } from '@/bank/games/games-bank.service';
 import { NewGameLocalizationRequest, NewGameRequest } from '@/bank/dto/new-game.request';
 import { Game, Platform } from '@prisma/client';
 import { PlatformsBankService } from '@/bank/platforms/platforms-bank.service';
 import { NewPlatformRequest } from '@/bank/dto/new-platform.request';
-import { IGDBGameResponse } from '@/igdb/interface/igdb-game.response';
-import { UpcitemdbService } from '@/barcode-provider/upcitemdb/upcitemdb.service';
-import { PricechartingService } from '@/barcode-provider/pricecharting/pricecharting.service';
-import { BarcodespiderService } from '@/barcode-provider/barcodespider/barcodespider.service';
+import { IGDBGameResponse } from '@/providers/igdb/interface/igdb-game.response';
+import { UpcitemdbService } from '@/providers/barcode/upcitemdb/upcitemdb.service';
+import { PricechartingService } from '@/providers/barcode/pricecharting/pricecharting.service';
+import { BarcodespiderService } from '@/providers/barcode/barcodespider/barcodespider.service';
 import { GetGamesFromImagesRequest } from './dto/get-games-from-images.request';
 import { AnalyzeService } from '@/analyze/analyze.service';
-import { RegionService } from '@/region/region.service';
+import { RegionService } from '@/bank/region/region.service';
 @Injectable()
 export class BankService {
     private readonly logger = new Logger(BankService.name);
@@ -82,7 +82,7 @@ export class BankService {
 
     async fetchGamesFromImages(request: GetGamesFromImagesRequest): Promise<Game[]> {
         try {
-            const analysis = await this.analyzeService.analyzeGame(request.images);
+            const analysis = await this.analyzeService.analyzeGameFromImages(request.images);
 
             try {
                 const games = await this.gamesBankService.searchGamesInProviders({ query: analysis.title });

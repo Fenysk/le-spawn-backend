@@ -10,6 +10,7 @@ import { CollectionsController } from '@/collections/collections.controller';
     BankModule
   ],
   providers: [GamesCollectionService, CollectionsService],
-  controllers: [GamesCollectionController, CollectionsController]
+  controllers: [GamesCollectionController, CollectionsController],
+  exports: [GamesCollectionService]
 })
 export class CollectionsModule {}
