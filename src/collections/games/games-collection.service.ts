@@ -1,10 +1,9 @@
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '@/common/prisma/prisma.service';
-import { AddGameItemToCollectionRequest } from '@/collections/dto/add-game-item-to-collection.request';
 import { GamesBankService } from '@/bank/games/games-bank.service';
 import { Collection, Game, GameCollectionItem } from '@prisma/client';
 import { UpdateGameItemInCollectionRequest } from '@/collections/dto/update-game-item-in-collection.request';
-import { ExperimentalAddGameItemToCollectionRequest } from '../dto/experimental-add-game-item-to-collection.request';
+import { AddGameItemToCollectionRequest } from '../dto/add-game-item-to-collection.request';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GamesCollectionEventNames } from '../events/games-collection.events';
 
@@ -17,9 +16,9 @@ export class GamesCollectionService {
     ) { }
 
     /** Experimental */
-    async experimentalAddGameToCollection(
+    async addGameToCollection(
         userId: string,
-        gameItemData: ExperimentalAddGameItemToCollectionRequest
+        gameItemData: AddGameItemToCollectionRequest
     ): Promise<GameCollectionItem> {
         const { collectionId, frontGameImageUrl: frontImageUrl, backGameImageUrl: backImageUrl, barcode } = gameItemData;
 
@@ -73,41 +72,6 @@ export class GamesCollectionService {
             where: { id: gameItemId },
             include: { game: true }
         });
-    }
-
-    async addGameToCollection(
-        userId: string,
-        gameItemData: AddGameItemToCollectionRequest
-    ): Promise<GameCollectionItem> {
-        try {
-            const collection = await this.prismaService.collection.findUnique({ where: { id: gameItemData.collectionId } });
-
-            if (collection.userId !== userId)
-                throw new UnauthorizedException('Unauthorized');
-
-            const isGameAlreadyExist = await this.gamesBankService.searchGamesInBank({ id: gameItemData.gameId });
-
-            if (!isGameAlreadyExist)
-                console.log('Game not found');
-
-            const newGameCollectionItem = await this.prismaService.gameCollectionItem.create({
-                data: {
-                    hasBox: gameItemData.hasBox,
-                    hasGame: gameItemData.hasGame,
-                    hasPaper: gameItemData.hasPaper,
-                    stateBox: gameItemData.stateBox,
-                    stateGame: gameItemData.stateGame,
-                    statePaper: gameItemData.statePaper,
-                    collection: { connect: { id: gameItemData.collectionId } },
-                    game: { connect: { id: gameItemData.gameId } }
-                },
-                include: { game: true }
-            });
-
-            return newGameCollectionItem;
-        } catch (error) {
-            throw error;
-        }
     }
 
     async updateGameItemInCollection(
